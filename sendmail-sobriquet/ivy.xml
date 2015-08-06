@@ -8,7 +8,7 @@
 		<conf name="runtime" visibility="public" description="Sendmail Sorbiquet"/>
 		<conf name="test" visibility="private" description="unit testing" extends="compile"/>
 	</configurations>
-	<dependencies defaultconfmapping="runtime->default(runtime);compile->default(compile);test->runtime(default)">
+	<dependencies defaultconfmapping="runtime->default(runtime);compile->default(compile);test->default(compile)">
 		
 		<!-- Logging, Slf4j via Log4j 2 -->
 		<dependency org="org.apache.logging.log4j" name="log4j-slf4j-impl" rev="2.3" />
@@ -18,14 +18,21 @@
 		<dependency org="org.slf4j" name="jcl-over-slf4j" rev="1.7.12" />
 		
 		<!-- Spring -->
-		<dependency org="org.springframework" name="spring-aop" rev="3.2.13.RELEASE" />
-		<dependency org="org.springframework" name="spring-context" rev="3.2.13.RELEASE" />
-		<dependency org="org.springframework" name="spring-core" rev="3.2.13.RELEASE" />
-		<dependency org="org.springframework" name="spring-webmvc" rev="3.2.13.RELEASE" />
+		<dependency org="org.springframework" name="spring-aop" rev="${version.spring}" />
+		<dependency org="org.springframework" name="spring-context" rev="${version.spring}" />
+		<dependency org="org.springframework" name="spring-core" rev="${version.spring}" />
+		<dependency org="org.springframework" name="spring-webmvc" rev="${version.spring}" />
 		
 		<!-- Spring LDAP -->
-		<dependency org="org.springframework.ldap" name="spring-ldap-core" rev="2.0.3.RELEASE" />
+		<dependency org="org.springframework.ldap" name="spring-ldap-core" rev="2.0.3.RELEASE">
+			<exclude org="org.springframework"/>
+		</dependency>
 		
+		<!-- JSON -->
+		<dependency org="com.fasterxml.jackson.core" name="jackson-annotations" rev="${version.jackson}"/>
+		<dependency org="com.fasterxml.jackson.core" name="jackson-core" rev="${version.jackson}"/>
+		<dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="${version.jackson}"/>
+
 		<!-- Web runtime -->
 		<dependency org="org.mortbay.jetty" name="jetty-util" rev="6.1.26" />
 		<dependency org="taglibs" name="standard" rev="1.1.2" conf="runtime"/>
@@ -38,16 +45,16 @@
 		<dependency org="cglib" name="cglib" rev="2.2.2" conf="compile,runtime"/>
 
 		<!-- Unit test support -->
-		<dependency org="junit" name="junit" rev="4.12" conf="test">
-			<artifact name="junit" />
-		</dependency>
-		<dependency org="org.springframework" name="spring-test" rev="3.2.13.RELEASE" conf="test">
-			<artifact name="spring-test" />
-		</dependency>
+		<dependency org="junit" name="junit" rev="4.12" conf="test"/>
+		<dependency org="org.springframework" name="spring-test" rev="3.2.13.RELEASE" conf="test"/>
 		<dependency org="org.mortbay.jetty" name="jetty" rev="6.1.26" conf="test">
     		<exclude module="servlet-api"/>
     		<exclude module="junit"/>
 		</dependency>
+		<dependency org="com.btmatthews.ldapunit" name="ldapunit" rev="1.1.0" conf="test"/>
 
+		<!-- Global excludes -->
+		<exclude org="commons-logging"/>
+		
 	</dependencies>
 </ivy-module>
