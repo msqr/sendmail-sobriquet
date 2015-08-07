@@ -24,8 +24,12 @@
 
 package magoffin.matt.sobriquet.sendmail.test;
 
+import magoffin.matt.dao.SearchResults;
+import magoffin.matt.sobriquet.api.AliasSearchCriteria;
 import magoffin.matt.sobriquet.domain.Alias;
+import magoffin.matt.sobriquet.domain.AliasSearchResult;
 import magoffin.matt.sobriquet.domain.BasicAlias;
+import magoffin.matt.sobriquet.sendmail.SendmailAlias;
 import magoffin.matt.sobriquet.sendmail.SendmailAliasDao;
 import magoffin.matt.sobriquet.test.BaseEmbeddedLdapTest;
 import org.junit.Assert;
@@ -42,6 +46,9 @@ import org.springframework.ldap.core.LdapTemplate;
  */
 public class SendmailAliasDaoTests extends BaseEmbeddedLdapTest {
 
+	private static final String TEST_ALIAS_GROUPING = "test-grouping";
+	private static final String TEST_CLUSTER = "test-cluster";
+
 	private SendmailAliasDao dao;
 
 	@Autowired
@@ -50,12 +57,8 @@ public class SendmailAliasDaoTests extends BaseEmbeddedLdapTest {
 	@Before
 	public void setup() {
 		dao = new SendmailAliasDao(ldapTemplate);
-	}
-
-	@Test
-	public void getNonExistent() {
-		Alias result = dao.get("nope");
-		Assert.assertNull("Result not found", result);
+		dao.setDefaultAliasGrouping(TEST_ALIAS_GROUPING);
+		dao.setDefaultCluster(TEST_CLUSTER);
 	}
 
 	@Test
@@ -63,6 +66,50 @@ public class SendmailAliasDaoTests extends BaseEmbeddedLdapTest {
 		BasicAlias a = new BasicAlias("foo", "bar");
 		String key = dao.store(a);
 		Assert.assertEquals("Returned key", "foo", key);
+	}
+
+	@Test
+	public void findNonExistent() {
+		Alias result = dao.get("nope");
+		Assert.assertNull("Result not found", result);
+	}
+
+	@Test
+	public void findByKey() {
+		BasicAlias a = new BasicAlias("foo", "bar");
+		String key = dao.store(a);
+		Assert.assertEquals("Returned key", "foo", key);
+
+		Alias found = dao.get(key);
+		Assert.assertTrue("SendmailAlias instance", found instanceof SendmailAlias);
+		SendmailAlias smAlias = (SendmailAlias) found;
+		Assert.assertEquals("Alias", a.getAlias(), smAlias.getAlias());
+		Assert.assertEquals("Actuals", a.getActuals(), smAlias.getActuals());
+		Assert.assertEquals("Alias grouping", TEST_ALIAS_GROUPING, smAlias.getGrouping());
+		Assert.assertEquals("Alias cluster", TEST_CLUSTER, smAlias.getCluster());
+	}
+
+	@Test
+	public void delete() {
+		BasicAlias a = new BasicAlias("foo", "bar");
+		String key = dao.store(a);
+		Alias found = dao.get(key);
+		Assert.assertTrue("SendmailAlias instance", found instanceof SendmailAlias);
+
+		// now delete, and try to find again
+		dao.delete(found);
+
+		found = dao.get(key);
+		Assert.assertNull("Deleted", found);
+	}
+
+	@Test
+	public void searchForAliasNoResults() {
+		AliasSearchCriteria crit = new AliasSearchCriteria("foo");
+		SearchResults<AliasSearchResult> results = dao.findByCriteria(crit);
+		Assert.assertNotNull("Returned results", results);
+		Assert.assertEquals("Returned count", 0, results.getReturnedResultCount());
+		Assert.assertEquals("Total results", Integer.valueOf(0), results.getTotalResultCount());
 	}
 
 }

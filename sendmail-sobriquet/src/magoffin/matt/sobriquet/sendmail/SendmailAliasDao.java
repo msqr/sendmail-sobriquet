@@ -25,15 +25,22 @@
 package magoffin.matt.sobriquet.sendmail;
 
 import static org.springframework.ldap.query.LdapQueryBuilder.query;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 import magoffin.matt.dao.SearchCriteria;
 import magoffin.matt.dao.SearchResults;
 import magoffin.matt.sobriquet.api.AliasDao;
+import magoffin.matt.sobriquet.api.AliasSearchResults;
 import magoffin.matt.sobriquet.domain.Alias;
 import magoffin.matt.sobriquet.domain.AliasSearchResult;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.query.ConditionCriteria;
+import org.springframework.ldap.query.ContainerCriteria;
+import org.springframework.ldap.query.LdapQueryBuilder;
 
 /**
  * Sendmail LDAP implementation of {@link AliasDao}.
@@ -63,10 +70,23 @@ public class SendmailAliasDao implements AliasDao {
 		this.ldapTemplate = ldapTemplate;
 	}
 
+	private void applyDefaults(SendmailAlias alias) {
+		if ( alias == null ) {
+			return;
+		}
+		if ( defaultAliasGrouping != null && alias.getGrouping() == null ) {
+			alias.setGrouping(defaultAliasGrouping);
+		}
+		if ( defaultCluster != null && alias.getCluster() == null ) {
+			alias.setCluster(defaultCluster);
+		}
+	}
+
 	@Override
 	public String store(Alias domainObject) {
 		SendmailAlias alias = (domainObject instanceof SendmailAlias ? (SendmailAlias) domainObject
 				: new SendmailAlias(domainObject));
+		applyDefaults(alias);
 		SendmailAlias existing = findFirst(alias.getId());
 		if ( existing != null ) {
 			ldapTemplate.update(alias);
@@ -93,13 +113,35 @@ public class SendmailAliasDao implements AliasDao {
 
 	@Override
 	public void delete(Alias domainObject) {
-		ldapTemplate.delete(domainObject);
+		SendmailAlias alias = (domainObject instanceof SendmailAlias ? (SendmailAlias) domainObject
+				: new SendmailAlias(domainObject));
+		ldapTemplate.delete(alias);
 	}
 
 	@Override
 	public SearchResults<AliasSearchResult> findByCriteria(SearchCriteria criteria) {
-		// TODO Auto-generated method stub
-		return null;
+		LdapQueryBuilder builder = query();
+		if ( criteria.getMaximumResultCount() != null ) {
+			builder.countLimit(criteria.getMaximumResultCount());
+		}
+		Map<String, ?> filter = criteria.getSearchFilters();
+		ContainerCriteria or = null;
+		if ( filter.containsKey(SEARCH_FILTER_ALIAS) ) {
+			or = builder.where(SendmailAlias.SENDMAIL_MTA_KEY_ATTR).like(
+					"*" + filter.get(SEARCH_FILTER_ALIAS) + "*");
+		}
+		if ( filter.containsKey(SEARCH_FILTER_ACTUAL) ) {
+			ConditionCriteria cond = null;
+			if ( or != null ) {
+				cond = or.or(SendmailAlias.SENDMAIL_MTA_ALIAS_VALUE_ATTR);
+			} else {
+				cond = builder.where(SendmailAlias.SENDMAIL_MTA_ALIAS_VALUE_ATTR);
+			}
+			cond.is(filter.get(SEARCH_FILTER_ACTUAL).toString());
+		}
+		List<SendmailAlias> found = ldapTemplate.find(builder, SendmailAlias.class);
+		return new AliasSearchResults((found != null ? new ArrayList<AliasSearchResult>(found) : null),
+				criteria);
 	}
 
 	/**
@@ -113,18 +155,31 @@ public class SendmailAliasDao implements AliasDao {
 
 	/**
 	 * Set a default alias grouping to apply when {@link #store(Alias)} is
-	 * called.
+	 * called and no grouping is defined on that instance.
 	 * 
 	 * @param defaultAliasGrouping
+	 *        The default alias grouping value.
 	 */
 	public void setDefaultAliasGrouping(String defaultAliasGrouping) {
 		this.defaultAliasGrouping = defaultAliasGrouping;
 	}
 
+	/**
+	 * Get the default cluster to use.
+	 * 
+	 * @return The default cluster.
+	 */
 	public String getDefaultCluster() {
 		return defaultCluster;
 	}
 
+	/**
+	 * Set a default cluster to apply when {@link #store(Alias)} is called and
+	 * no cluster is defined on that instance.
+	 * 
+	 * @param defaultCluster
+	 *        The default cluster value.
+	 */
 	public void setDefaultCluster(String defaultCluster) {
 		this.defaultCluster = defaultCluster;
 	}

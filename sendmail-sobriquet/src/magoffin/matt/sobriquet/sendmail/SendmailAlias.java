@@ -46,6 +46,9 @@ public final class SendmailAlias implements Alias, AliasSearchResult {
 	/** The Sendmail key attribute, also used as a DN attribute. */
 	public static final String SENDMAIL_MTA_KEY_ATTR = "sendmailMTAKey";
 
+	/** The Sendmail alias value attribute. */
+	public static final String SENDMAIL_MTA_ALIAS_VALUE_ATTR = "sendmailMTAAliasValue";
+
 	@Id
 	private Name dn;
 
@@ -53,7 +56,7 @@ public final class SendmailAlias implements Alias, AliasSearchResult {
 	@Attribute(name = SENDMAIL_MTA_KEY_ATTR)
 	private String key;
 
-	@Attribute(name = "sendmailMTAAliasValue")
+	@Attribute(name = SENDMAIL_MTA_ALIAS_VALUE_ATTR)
 	private Set<String> values;
 
 	@Attribute(name = "sendmailMTAAliasGrouping")

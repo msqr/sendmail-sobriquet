@@ -38,4 +38,9 @@ import magoffin.matt.sobriquet.domain.AliasSearchResult;
 public interface AliasDao extends GenericDao<Alias, String>,
 		SearchableDao<Alias, AliasSearchResult, String> {
 
+	/** A search criteria filter key for searching by alias. */
+	String SEARCH_FILTER_ALIAS = "alias";
+
+	/** A search criteria filter key for searching by actual value. */
+	String SEARCH_FILTER_ACTUAL = "actual";
 }
