@@ -56,8 +56,8 @@ public class AliasSearchResults implements SearchResults<AliasSearchResult> {
 	 */
 	public AliasSearchResults(List<AliasSearchResult> results, SearchCriteria criteria) {
 		super();
-		this.results = (results == null ? Collections.<AliasSearchResult> emptyList() : results);
-		this.totalResultCount = results.size();
+		this.results = (results != null ? results : Collections.<AliasSearchResult> emptyList());
+		this.totalResultCount = (results != null ? results.size() : Integer.valueOf(0));
 		this.startingOffset = (criteria != null ? criteria.getStartingOffset() : Integer.valueOf(0));
 		this.maximumResultCount = (criteria != null ? criteria.getMaximumResultCount() : null);
 	}

@@ -33,6 +33,7 @@ import org.springframework.ldap.odm.annotations.Attribute;
 import org.springframework.ldap.odm.annotations.DnAttribute;
 import org.springframework.ldap.odm.annotations.Entry;
 import org.springframework.ldap.odm.annotations.Id;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 /**
  * Sendmail alias implementation.
@@ -100,6 +101,7 @@ public final class SendmailAlias implements Alias, AliasSearchResult {
 		}
 	}
 
+	@JsonIgnore
 	@Override
 	public String getId() {
 		return key;
@@ -145,6 +147,7 @@ public final class SendmailAlias implements Alias, AliasSearchResult {
 	 * 
 	 * @return The distinguished name.
 	 */
+	@JsonIgnore
 	public Name getDn() {
 		return dn;
 	}
@@ -154,6 +157,7 @@ public final class SendmailAlias implements Alias, AliasSearchResult {
 		return key;
 	}
 
+	@JsonIgnore
 	@Override
 	public String getActual() {
 		Set<String> vals = getActuals();
@@ -165,6 +169,7 @@ public final class SendmailAlias implements Alias, AliasSearchResult {
 		return values;
 	}
 
+	@JsonIgnore
 	public String getKey() {
 		return key;
 	}
@@ -173,6 +178,7 @@ public final class SendmailAlias implements Alias, AliasSearchResult {
 		this.key = key;
 	}
 
+	@JsonIgnore
 	public Set<String> getValues() {
 		return values;
 	}

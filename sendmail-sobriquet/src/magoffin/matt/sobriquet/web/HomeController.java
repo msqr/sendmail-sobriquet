@@ -24,8 +24,6 @@
 
 package magoffin.matt.sobriquet.web;
 
-import magoffin.matt.sobriquet.api.AliasDao;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -39,9 +37,6 @@ import org.springframework.web.bind.annotation.RequestMethod;
 @Controller
 @RequestMapping("/")
 public class HomeController {
-
-	@Autowired
-	private AliasDao aliasDao;
 
 	@RequestMapping(method = RequestMethod.GET)
 	public String home() {

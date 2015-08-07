@@ -139,7 +139,12 @@ public class SendmailAliasDao implements AliasDao {
 			}
 			cond.is(filter.get(SEARCH_FILTER_ACTUAL).toString());
 		}
-		List<SendmailAlias> found = ldapTemplate.find(builder, SendmailAlias.class);
+		List<SendmailAlias> found = null;
+		try {
+			found = ldapTemplate.find(builder, SendmailAlias.class);
+		} catch ( IllegalStateException e ) {
+			// find() throws this when no filter conditions have been specified.. ignore and continue
+		}
 		return new AliasSearchResults((found != null ? new ArrayList<AliasSearchResult>(found) : null),
 				criteria);
 	}
