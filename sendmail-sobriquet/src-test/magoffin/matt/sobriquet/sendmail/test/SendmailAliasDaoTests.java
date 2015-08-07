@@ -112,4 +112,63 @@ public class SendmailAliasDaoTests extends BaseEmbeddedLdapTest {
 		Assert.assertEquals("Total results", Integer.valueOf(0), results.getTotalResultCount());
 	}
 
+	@Test
+	public void searchForAliasNoMatch() {
+		BasicAlias a = new BasicAlias("foo", "bar");
+		dao.store(a);
+		AliasSearchCriteria crit = new AliasSearchCriteria("bar");
+		SearchResults<AliasSearchResult> results = dao.findByCriteria(crit);
+		Assert.assertNotNull("Returned results", results);
+		Assert.assertEquals("Returned count", 0, results.getReturnedResultCount());
+		Assert.assertEquals("Total results", Integer.valueOf(0), results.getTotalResultCount());
+	}
+
+	@Test
+	public void searchForAliasOneResultExactAlias() {
+		BasicAlias a = new BasicAlias("foo", "bar");
+		dao.store(a);
+
+		AliasSearchCriteria crit = new AliasSearchCriteria("foo");
+		SearchResults<AliasSearchResult> results = dao.findByCriteria(crit);
+		Assert.assertNotNull("Returned results", results);
+		Assert.assertEquals("Returned count", 1, results.getReturnedResultCount());
+		Assert.assertEquals("Total results", Integer.valueOf(1), results.getTotalResultCount());
+
+		AliasSearchResult r = results.getResults().iterator().next();
+		Assert.assertNotNull("Returned result", r);
+		Assert.assertEquals("Alias", a.getAlias(), r.getAlias());
+		Assert.assertEquals("Actuals", a.getActuals(), r.getActuals());
+	}
+
+	@Test
+	public void searchForAliasOneResultSubstringAlias() {
+		BasicAlias a = new BasicAlias("foo.bam.doh", "bar");
+		dao.store(a);
+
+		AliasSearchCriteria crit = new AliasSearchCriteria("bam");
+		SearchResults<AliasSearchResult> results = dao.findByCriteria(crit);
+		Assert.assertNotNull("Returned results", results);
+		Assert.assertEquals("Returned count", 1, results.getReturnedResultCount());
+		Assert.assertEquals("Total results", Integer.valueOf(1), results.getTotalResultCount());
+
+		AliasSearchResult r = results.getResults().iterator().next();
+		Assert.assertNotNull("Returned result", r);
+		Assert.assertEquals("Alias", a.getAlias(), r.getAlias());
+		Assert.assertEquals("Actuals", a.getActuals(), r.getActuals());
+	}
+
+	@Test
+	public void searchForAliasMultiResultSubstringAlias() {
+		BasicAlias a1 = new BasicAlias("foo.bam.doh", "bar");
+		dao.store(a1);
+		BasicAlias a2 = new BasicAlias("foo.bam.dope", "bar");
+		dao.store(a2);
+
+		AliasSearchCriteria crit = new AliasSearchCriteria("bam");
+		SearchResults<AliasSearchResult> results = dao.findByCriteria(crit);
+		Assert.assertNotNull("Returned results", results);
+		Assert.assertEquals("Returned count", 2, results.getReturnedResultCount());
+		Assert.assertEquals("Total results", Integer.valueOf(2), results.getTotalResultCount());
+	}
+
 }
