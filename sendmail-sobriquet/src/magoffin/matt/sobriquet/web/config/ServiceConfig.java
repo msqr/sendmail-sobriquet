@@ -24,7 +24,16 @@
 
 package magoffin.matt.sobriquet.web.config;
 
+import magoffin.matt.sobriquet.api.AliasDao;
+import magoffin.matt.sobriquet.sendmail.SendmailAliasDao;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.context.support.PropertySourcesPlaceholderConfigurer;
+import org.springframework.ldap.core.ContextSource;
+import org.springframework.ldap.core.LdapTemplate;
+import org.springframework.ldap.core.support.LdapContextSource;
 
 /**
  * Configuration for app services.
@@ -33,6 +42,47 @@ import org.springframework.context.annotation.Configuration;
  * @version 1.0
  */
 @Configuration
+@PropertySource("classpath:env.properties")
 public class ServiceConfig {
+
+	@Bean
+	public static PropertySourcesPlaceholderConfigurer pspc() {
+		PropertySourcesPlaceholderConfigurer result = new PropertySourcesPlaceholderConfigurer();
+		return result;
+	}
+
+	@Value("${ldapUrl}")
+	private String ldapUrl;
+
+	@Value("${ldapUserDn}")
+	private String ldapUserDn;
+
+	@Value("${ldapPassword}")
+	private String ldapPassword;
+
+	@Value("${ldapBaseDn}")
+	private String ldapBaseDn;
+
+	@Bean
+	public ContextSource contextSource() {
+		LdapContextSource lcs = new LdapContextSource();
+		lcs.setUserDn(ldapUserDn);
+		lcs.setPassword(ldapPassword);
+		lcs.setBase(ldapBaseDn);
+		lcs.setUrl(ldapUrl);
+		return lcs;
+	}
+
+	@Bean
+	public LdapTemplate ldapTemplate() {
+		return new LdapTemplate(contextSource());
+	}
+
+	@Bean
+	public AliasDao aliasDao() {
+		SendmailAliasDao dao = new SendmailAliasDao(ldapTemplate());
+
+		return dao;
+	}
 
 }

@@ -1,0 +1,6 @@
+<Context>
+	<Environment name="ldapUrl" value="ldaps://server:389/dc=example,dc=com" type="java.lang.String" override="false"/>
+	<Environment name="ldapBaseDn" value="ou=Sendmail" type="java.lang.String" override="false"/>
+	<Environment name="ldapUserDn" value="cn=Sendmail,dc=example,dc=com" type="java.lang.String" override="false"/>
+	<Environment name="ldapPassword" value="secret" type="java.lang.String" override="false"/>
+</Context>
