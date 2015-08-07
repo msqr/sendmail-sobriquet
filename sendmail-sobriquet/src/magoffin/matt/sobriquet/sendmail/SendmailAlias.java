@@ -43,11 +43,21 @@ import org.springframework.ldap.odm.annotations.Id;
 @Entry(objectClasses = { "sendmailMTAAliasObject", "sendmailMTAAlias", "sendmailMTA", "top" }, base = "ou=Sendmail")
 public final class SendmailAlias implements Alias, AliasSearchResult {
 
+	/** The Sendmail objectClass attribute values. */
+	public static final String[] SENDMAIL_OBJECT_CLASS = new String[] { "sendmailMTAAliasObject",
+			"sendmailMTAAlias", "sendmailMTA", "top" };
+
 	/** The Sendmail key attribute, also used as a DN attribute. */
 	public static final String SENDMAIL_MTA_KEY_ATTR = "sendmailMTAKey";
 
 	/** The Sendmail alias value attribute. */
 	public static final String SENDMAIL_MTA_ALIAS_VALUE_ATTR = "sendmailMTAAliasValue";
+
+	/** The Sendmail grouping value attribute. */
+	public static final String SENDMAIL_MTA_ALIAS_GROUPING_ATTR = "sendmailMTAAliasGrouping";
+
+	/** The Sendmail cluster value attribute. */
+	public static final String SENDMAIL_MTA_CLUSTER_ATTR = "sendmailMTACluster";
 
 	@Id
 	private Name dn;
@@ -59,10 +69,10 @@ public final class SendmailAlias implements Alias, AliasSearchResult {
 	@Attribute(name = SENDMAIL_MTA_ALIAS_VALUE_ATTR)
 	private Set<String> values;
 
-	@Attribute(name = "sendmailMTAAliasGrouping")
+	@Attribute(name = SENDMAIL_MTA_ALIAS_GROUPING_ATTR)
 	private String grouping;
 
-	@Attribute(name = "sendmailMTACluster")
+	@Attribute(name = SENDMAIL_MTA_CLUSTER_ATTR)
 	private String cluster;
 
 	/**
@@ -128,6 +138,15 @@ public final class SendmailAlias implements Alias, AliasSearchResult {
 			return false;
 		}
 		return true;
+	}
+
+	/**
+	 * Get the distinguished name of this object.
+	 * 
+	 * @return The distinguished name.
+	 */
+	public Name getDn() {
+		return dn;
 	}
 
 	@Override

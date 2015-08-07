@@ -24,10 +24,12 @@
 		<dependency org="org.springframework" name="spring-tx" rev="${version.spring}" />
 		<dependency org="org.springframework" name="spring-webmvc" rev="${version.spring}" />
 		
-		<!-- Spring LDAP -->
+		<!-- LDAP -->
 		<dependency org="org.springframework.ldap" name="spring-ldap-core" rev="2.0.3.RELEASE">
 			<exclude org="org.springframework"/>
 		</dependency>
+		<!-- Spring LDAP has LDIF parsing, but not generating! Bummer -->
+		<dependency org="com.unboundid" name="unboundid-ldapsdk" rev="3.0.0"/>
 		
 		<!-- JSON -->
 		<dependency org="com.fasterxml.jackson.core" name="jackson-annotations" rev="${version.jackson}"/>
@@ -52,7 +54,9 @@
     		<exclude module="servlet-api"/>
     		<exclude module="junit"/>
 		</dependency>
-		<dependency org="com.btmatthews.ldapunit" name="ldapunit" rev="1.1.0" conf="test"/>
+		<dependency org="com.btmatthews.ldapunit" name="ldapunit" rev="1.1.0" conf="test">
+			<exclude org="com.unboundid"/>
+		</dependency>
 
 		<!-- Global excludes -->
 		<exclude org="commons-logging"/>

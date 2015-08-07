@@ -25,6 +25,8 @@
 package magoffin.matt.sobriquet.test;
 
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.TestExecutionListeners;
@@ -42,5 +44,8 @@ import org.springframework.test.context.support.DependencyInjectionTestExecution
 @ContextConfiguration(classes = BaseTestConfig.class)
 @ActiveProfiles("test")
 public abstract class BaseTest {
+
+	/** A class-level logger. */
+	protected final Logger log = LoggerFactory.getLogger(getClass());
 
 }
