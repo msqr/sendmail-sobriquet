@@ -1,7 +1,7 @@
 /* ===================================================================
- * HomeController.java
+ * Alias.java
  * 
- * Created 7/08/2015 7:10:38 am
+ * Created 7/08/2015 8:32:36 am
  * 
  * Copyright (c) 2015 Matt Magoffin.
  * 
@@ -22,25 +22,41 @@
  * ===================================================================
  */
 
-package magoffin.matt.sorbirquet.web;
+package magoffin.matt.sobriquet.domain;
 
-import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
+import java.util.Set;
+import magoffin.matt.dao.Entity;
 
 /**
- * Controller for the app landing.
+ * An individual alias value.
  *
  * @author matt
  * @version 1.0
  */
-@Controller
-@RequestMapping("/")
-public class HomeController {
+public interface Alias extends Entity<String> {
 
-	@RequestMapping(method = RequestMethod.GET)
-	public String home() {
-		return "home";
-	}
+	/**
+	 * Get the alias.
+	 * 
+	 * @return The alias value.
+	 */
+	String getAlias();
+
+	/**
+	 * Get the first actual value the alias maps to.
+	 * 
+	 * This is just a convenience method for getting the first value from
+	 * {@link #getActuals()}.
+	 * 
+	 * @return The first actual value.
+	 */
+	String getActual();
+
+	/**
+	 * Get a set of acutal values the alias maps to.
+	 * 
+	 * @return A set of values the alias map to.
+	 */
+	Set<String> getActuals();
 
 }

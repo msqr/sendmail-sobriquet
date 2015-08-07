@@ -22,7 +22,7 @@
  * ===================================================================
  */
 
-package magoffin.matt.sorbirquet.web.config;
+package magoffin.matt.sobriquet.web.config;
 
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
@@ -40,16 +40,12 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 /**
  * MVC configuration.
  * 
- * <p>
- * TODO
- * </p>
- *
  * @author matt
  * @version 1.0
  */
 @EnableWebMvc
 @Configuration
-@ComponentScan(basePackages = { "magoffin.matt.sorbirquet.web" })
+@ComponentScan(basePackages = { "magoffin.matt.sobriquet.web" })
 public class MvcConfig extends WebMvcConfigurerAdapter {
 
 	@Override

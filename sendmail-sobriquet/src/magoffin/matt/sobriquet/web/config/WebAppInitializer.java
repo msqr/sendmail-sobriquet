@@ -1,7 +1,7 @@
 /* ===================================================================
- * BaseTest.java
+ * WebAppInitializer.java
  * 
- * Created 6/08/2015 7:59:55 pm
+ * Created 7/08/2015 6:48:48 am
  * 
  * Copyright (c) 2015 Matt Magoffin.
  * 
@@ -22,25 +22,43 @@
  * ===================================================================
  */
 
-package magoffin.matt.sobriquet.test;
+package magoffin.matt.sobriquet.web.config;
 
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import javax.servlet.Filter;
+import org.springframework.web.filter.CharacterEncodingFilter;
+import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
 /**
- * Base class for unit tests.
+ * Web application initializer.
  *
  * @author matt
  * @version 1.0
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
-@ContextConfiguration(classes = BaseTestConfig.class)
-@ActiveProfiles("test")
-public abstract class BaseTest {
+public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
+
+	@Override
+	protected String getServletName() {
+		return "Sobriquet";
+	}
+
+	@Override
+	protected Class<?>[] getRootConfigClasses() {
+		return new Class<?>[] { ServiceConfig.class };
+	}
+
+	@Override
+	protected Class<?>[] getServletConfigClasses() {
+		return new Class<?>[] { MvcConfig.class };
+	}
+
+	@Override
+	protected String[] getServletMappings() {
+		return new String[] { "/" };
+	}
+
+	@Override
+	protected Filter[] getServletFilters() {
+		return new Filter[] { new CharacterEncodingFilter() };
+	}
 
 }

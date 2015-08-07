@@ -1,7 +1,7 @@
 /* ===================================================================
- * BaseTest.java
+ * AliasSearchResult.java
  * 
- * Created 6/08/2015 7:59:55 pm
+ * Created 7/08/2015 9:37:32 am
  * 
  * Copyright (c) 2015 Matt Magoffin.
  * 
@@ -22,25 +22,16 @@
  * ===================================================================
  */
 
-package magoffin.matt.sobriquet.test;
+package magoffin.matt.sobriquet.domain;
 
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import magoffin.matt.dao.SearchResult;
 
 /**
- * Base class for unit tests.
+ * Search result for Alias entities.
  *
  * @author matt
  * @version 1.0
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
-@ContextConfiguration(classes = BaseTestConfig.class)
-@ActiveProfiles("test")
-public abstract class BaseTest {
+public interface AliasSearchResult extends Alias, SearchResult<String> {
 
 }

@@ -1,7 +1,7 @@
 /* ===================================================================
- * BaseTest.java
+ * ServiceConfig.java
  * 
- * Created 6/08/2015 7:59:55 pm
+ * Created 7/08/2015 6:51:07 am
  * 
  * Copyright (c) 2015 Matt Magoffin.
  * 
@@ -22,25 +22,17 @@
  * ===================================================================
  */
 
-package magoffin.matt.sobriquet.test;
+package magoffin.matt.sobriquet.web.config;
 
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.context.annotation.Configuration;
 
 /**
- * Base class for unit tests.
+ * Configuration for app services.
  *
  * @author matt
  * @version 1.0
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
-@ContextConfiguration(classes = BaseTestConfig.class)
-@ActiveProfiles("test")
-public abstract class BaseTest {
+@Configuration
+public class ServiceConfig {
 
 }

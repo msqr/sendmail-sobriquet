@@ -1,7 +1,7 @@
 /* ===================================================================
- * WebAppInitializer.java
+ * AliasDao.java
  * 
- * Created 7/08/2015 6:48:48 am
+ * Created 7/08/2015 9:30:08 am
  * 
  * Copyright (c) 2015 Matt Magoffin.
  * 
@@ -22,43 +22,20 @@
  * ===================================================================
  */
 
-package magoffin.matt.sorbirquet.web.config;
+package magoffin.matt.sobriquet.api;
 
-import javax.servlet.Filter;
-import org.springframework.web.filter.CharacterEncodingFilter;
-import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
+import magoffin.matt.dao.GenericDao;
+import magoffin.matt.dao.SearchableDao;
+import magoffin.matt.sobriquet.domain.Alias;
+import magoffin.matt.sobriquet.domain.AliasSearchResult;
 
 /**
- * Web application initializer.
+ * DAO API for {@link Alias} entities.
  *
  * @author matt
  * @version 1.0
  */
-public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServletInitializer {
-
-	@Override
-	protected String getServletName() {
-		return "Sobriquet";
-	}
-
-	@Override
-	protected Class<?>[] getRootConfigClasses() {
-		return new Class<?>[] { ServiceConfig.class };
-	}
-
-	@Override
-	protected Class<?>[] getServletConfigClasses() {
-		return new Class<?>[] { MvcConfig.class };
-	}
-
-	@Override
-	protected String[] getServletMappings() {
-		return new String[] { "/" };
-	}
-
-	@Override
-	protected Filter[] getServletFilters() {
-		return new Filter[] { new CharacterEncodingFilter() };
-	}
+public interface AliasDao extends GenericDao<Alias, String>,
+		SearchableDao<Alias, AliasSearchResult, String> {
 
 }

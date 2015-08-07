@@ -1,7 +1,7 @@
 /* ===================================================================
- * BaseTest.java
+ * HomeController.java
  * 
- * Created 6/08/2015 7:59:55 pm
+ * Created 7/08/2015 7:10:38 am
  * 
  * Copyright (c) 2015 Matt Magoffin.
  * 
@@ -22,25 +22,25 @@
  * ===================================================================
  */
 
-package magoffin.matt.sobriquet.test;
+package magoffin.matt.sobriquet.web;
 
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
 
 /**
- * Base class for unit tests.
+ * Controller for the app landing.
  *
  * @author matt
  * @version 1.0
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
-@ContextConfiguration(classes = BaseTestConfig.class)
-@ActiveProfiles("test")
-public abstract class BaseTest {
+@Controller
+@RequestMapping("/")
+public class HomeController {
+
+	@RequestMapping(method = RequestMethod.GET)
+	public String home() {
+		return "home";
+	}
 
 }

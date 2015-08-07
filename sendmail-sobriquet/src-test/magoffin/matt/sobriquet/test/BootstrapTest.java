@@ -1,7 +1,7 @@
 /* ===================================================================
- * BaseTest.java
+ * BootstrapTest.java
  * 
- * Created 6/08/2015 7:59:55 pm
+ * Created 7/08/2015 10:57:27 am
  * 
  * Copyright (c) 2015 Matt Magoffin.
  * 
@@ -24,23 +24,25 @@
 
 package magoffin.matt.sobriquet.test;
 
-import org.junit.runner.RunWith;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.test.context.ContextConfiguration;
-import org.springframework.test.context.TestExecutionListeners;
-import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
-import org.springframework.test.context.support.DependencyInjectionTestExecutionListener;
+import org.junit.Assert;
+import org.junit.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Base class for unit tests.
+ * Test environment bootstrap tests.
  *
  * @author matt
  * @version 1.0
  */
-@RunWith(SpringJUnit4ClassRunner.class)
-@TestExecutionListeners(DependencyInjectionTestExecutionListener.class)
-@ContextConfiguration(classes = BaseTestConfig.class)
-@ActiveProfiles("test")
-public abstract class BaseTest {
+public class BootstrapTest extends BaseTest {
+
+	@Autowired
+	private Bootstrap bootstrap;
+
+	@Test
+	public void bootstrap() {
+		Assert.assertNotNull("Bootstrap wired", bootstrap);
+		Assert.assertNotEquals("Placeholder replaced", "${bootstrap.name}", bootstrap.getName());
+	}
 
 }

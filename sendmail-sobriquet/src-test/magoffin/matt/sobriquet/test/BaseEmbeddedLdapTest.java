@@ -1,7 +1,7 @@
 /* ===================================================================
- * ServiceConfig.java
+ * BaseEmbeddedLdapTest.java
  * 
- * Created 7/08/2015 6:51:07 am
+ * Created 7/08/2015 10:30:04 am
  * 
  * Copyright (c) 2015 Matt Magoffin.
  * 
@@ -22,17 +22,23 @@
  * ===================================================================
  */
 
-package magoffin.matt.sorbirquet.web.config;
+package magoffin.matt.sobriquet.test;
 
-import org.springframework.context.annotation.Configuration;
+import org.junit.Rule;
+import org.springframework.test.context.ContextConfiguration;
 
 /**
- * Configuration for app services.
+ * Base case for tests requiring an embedded LDAP server.
  *
  * @author matt
  * @version 1.0
  */
-@Configuration
-public class ServiceConfig {
+@ContextConfiguration(classes = LdapConfig.class)
+@DirectoryServerConfiguration(ldifFiles = "magoffin/matt/sobriquet/test/embedded-ldap-test.ldif", schemaFiles = {
+		"magoffin/matt/sobriquet/test/misc.schema", "magoffin/matt/sobriquet/test/sendmail.schema" }, authDN = LdapConfig.LDAP_USER_DN, authPassword = LdapConfig.LDAP_PASSWORD, baseDN = LdapConfig.LDAP_BASE_DN, port = LdapConfig.LDAP_PORT)
+public abstract class BaseEmbeddedLdapTest extends BaseTest {
+
+	@Rule
+	public DirectoryServerRule directoryServerRule = new DirectoryServerRule();
 
 }

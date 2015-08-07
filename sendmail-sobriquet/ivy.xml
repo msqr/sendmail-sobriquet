@@ -21,6 +21,7 @@
 		<dependency org="org.springframework" name="spring-aop" rev="${version.spring}" />
 		<dependency org="org.springframework" name="spring-context" rev="${version.spring}" />
 		<dependency org="org.springframework" name="spring-core" rev="${version.spring}" />
+		<dependency org="org.springframework" name="spring-tx" rev="${version.spring}" />
 		<dependency org="org.springframework" name="spring-webmvc" rev="${version.spring}" />
 		
 		<!-- Spring LDAP -->

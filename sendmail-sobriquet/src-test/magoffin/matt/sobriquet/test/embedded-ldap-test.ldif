@@ -1,0 +1,6 @@
+version: 1
+
+dn: ou=Sendmail,dc=example,dc=com
+objectClass: organizationalUnit
+objectClass: top
+ou: Test
