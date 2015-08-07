@@ -1,0 +1,12 @@
+.navbar-brand.logo {
+	padding: 4px 4px;
+}
+
+.navbar-brand.logo img {
+	height: 42px;
+}
+
+.navbar-header h1 {
+	font-size: 22px;
+	margin: 12px 0;
+}
