@@ -1,12 +1,14 @@
 .navbar-brand.logo {
-	padding: 4px 4px;
+	padding: 4px 4px 4px 8px;
 }
 
 .navbar-brand.logo img {
 	height: 42px;
 }
 
-.navbar-header h1 {
-	font-size: 22px;
-	margin: 12px 0;
+h1.navbar-text {
+	font-family: 'Special Elite', monospace;
+	font-size: 24px;
+	color: #2d2b28 !important;
+	margin: 15px 0 0 0;
 }

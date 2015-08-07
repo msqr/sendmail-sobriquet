@@ -9,6 +9,7 @@
 	<title><fmt:message key='app.name'/></title>
 	<link href="css/bootstrap.min.css" rel="stylesheet">
 	<link href="css/app.css" rel="stylesheet">
+	<link href='//fonts.googleapis.com/css?family=Special+Elite' rel='stylesheet' type='text/css'>
 </head>
 <body>
 <nav class="navbar navbar-default">
@@ -21,7 +22,7 @@
         <span class="icon-bar"></span>
       </button>    
       <a class="navbar-brand logo" href="#">
-        <img src="images/sendmail-sobriquet-54h.png" title="<fmt:message key='app.name'/>">
+        <img src="images/sendmail-sobriquet-logo.svg" title="<fmt:message key='app.name'/>">
       </a>
       <h1 class="navbar-text"><fmt:message key='app.name'/></h1>
     </div>
