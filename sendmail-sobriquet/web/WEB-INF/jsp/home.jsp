@@ -39,5 +39,6 @@
 
 	<script src="js-lib/jquery-2.1.4.min.js"></script>
 	<script src="js-lib/bootstrap.min.js"></script>
+	<script src="js/sobriquet.js"></script>
 </body>
 </html>
