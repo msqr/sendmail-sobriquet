@@ -33,3 +33,11 @@ p {
 .template {
 	display: none;
 }
+
+.btn .confirm {
+	display: none;
+}
+
+.btn-danger .confirm {
+	display: inherit !important;
+}

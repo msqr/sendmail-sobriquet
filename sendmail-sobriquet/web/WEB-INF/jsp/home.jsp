@@ -55,12 +55,15 @@
 						</tr>
 					</thead>
 					<tbody>
-						<tr class="template">
+						<tr class="alias template">
 							<td class="index"></td>
 							<td class="alias"></td>
 							<td class="actuals"></td>
 							<td>
-								<!-- TODO: actions -->
+								<button type="button" class="btn btn-default delete-alias" title="<fmt:message key='action.delete'/>">
+									<i class="glyphicon glyphicon-remove" aria-hidden="true"></i>
+									<span class="confirm"><fmt:message key='delete.confirm'/></span>
+								</button>
 							</td>
 						</tr>
 					</tbody>

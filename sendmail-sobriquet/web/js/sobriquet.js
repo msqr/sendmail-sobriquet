@@ -6,6 +6,8 @@
 (function(window, console) {
 'use strict';
 
+var aliasUrlTemplate = '';
+
 function renderSearchResults(results) {
 	var resultsContainer = $('#search-results'),
 		templateRow = resultsContainer.find('.template'),
@@ -21,6 +23,7 @@ function renderSearchResults(results) {
 			html.find('.index').text(idx);
 			html.find('.alias').text(result.alias);
 			html.find('.actuals').text(actuals);
+			html.data('alias', result);
 			rowContainer.append(html);
 		});
 	}
@@ -48,18 +51,22 @@ function submitSearch(form) {
 	});
 }
 
+function aliasUrl(key) {
+	return aliasUrlTemplate.replace(/\w+$/, encodeURIComponent(key));
+}
+
 function submitAddAlias(form) {
 	var alias = form.elements['alias'].value,
 		actual = form.elements['actual'].value,
-		url = form.action.replace(/\w+$/, encodeURIComponent(alias));
+		url = aliasUrl(alias);
 	if ( isEmptyText(alias) || isEmptyText(actual) ) {
 		return;
 	}
 	$.ajax({
-		type: 'PUT',
-		url: url,
-		data: actual,
-		contentType: 'text/plain',
+		type : 'PUT',
+		url : url,
+		data : actual,
+		contentType : 'text/plain',
 		dataType : 'json'
 	}).done(function() {
 		$(form).modal('hide');
@@ -69,13 +76,53 @@ function submitAddAlias(form) {
 	});
 }
 
+function findData(root, key) {
+	var r = $(root),
+		d = r.data(key);
+	if ( d ) {
+		return d;
+	}
+	r.parents().each(function(idx, el) {
+		d = $(el).data(key);
+		return (d === undefined);
+	});
+	return d;
+}
+
+function deleteAlias(button) {
+	var btn = $(button),
+		alias = findData(btn, 'alias');
+	if ( !alias ) {
+		return;
+	}
+	if ( btn.hasClass('btn-danger') ) {
+		$.ajax({
+			type : 'DELETE',
+			url : aliasUrl(alias.alias),
+			dataType : 'json'
+		}).done(function() {
+			// remove the row from the table
+			btn.parents('.alias').remove();
+			// TODO: renumber?
+		}).fail(function(xhr, status, error) {
+			// TODO
+		});
+	} else {
+		// confirm delete
+		btn.addClass('btn-danger');
+	}
+}
+
 function init() {
 	$('#search-form').submit(function(event) {
 		event.preventDefault();
 		submitSearch(this);
 		return false;
 	});
-	$('#add-alias-form').submit(function(event) {
+	$('#add-alias-form').each(function() {
+		// stash a ref to the alias base URL for add/delete ops
+		aliasUrlTemplate = this.action;
+	}).submit(function(event) {
 		event.preventDefault();
 		submitAddAlias(this);
 		return false;
@@ -83,6 +130,9 @@ function init() {
 		$('#add-alias-alias').focus();
 	}).on('hidden.bs.modal', function(event) {
 		this.reset();
+	});
+	$('#search-results').on('click', 'button.delete-alias', function(event) {
+		deleteAlias(this);
 	});
 }
 
