@@ -10,32 +10,66 @@
 	<link href="images/favicon.png" type="image/png" rel="icon">
 	<link href="images/favicon.png" type="image/png" rel="shortcut icon"> 
 	<link href="css/bootstrap.min.css" rel="stylesheet">
-	<link href="css/app.css" rel="stylesheet">
+	<link href="css/sobriquet.css" rel="stylesheet">
 	<link href='//fonts.googleapis.com/css?family=Special+Elite' rel='stylesheet' type='text/css'>
 </head>
 <body>
 <nav class="navbar navbar-default navbar-fixed-top">
   <div class="container-fluid">
     <div class="navbar-header">
-      <button type="button" class="navbar-toggle collapsed" data-toggle="collapse" data-target="#bs-example-navbar-collapse-1" aria-expanded="false">
-        <span class="sr-only">Toggle navigation</span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-      </button>    
       <a class="navbar-brand logo" href="#">
         <img src="images/sendmail-sobriquet-logo.svg" title="<fmt:message key='app.name'/>">
       </a>
       <h1 class="navbar-text"><fmt:message key='app.name'/></h1>
       <form class="navbar-form navbar-left" role="search" method="get" action="<c:url value='/api/v1/find'/>">
         <div class="form-group">
-          <input type="text" class="form-control" placeholder="Search" name="alias">
+          <input type="search" class="form-control" placeholder="<fmt:message key='search.query.placeholder'/>" name="alias">
         </div>
-        <button type="submit" class="btn btn-default">Submit</button>
+        <button type="submit" class="btn btn-default"><fmt:message key='action.search'/></button>
       </form>
     </div>
+	<button class="btn btn-primary navbar-btn navbar-right btn-add-alias" aria-label="<fmt:message key='action.add'/>"
+			data-toggle="modal" data-target="#add-alias-form">
+		<span class="glyphicon glyphicon-plus" aria-hidden="true"></span>
+	</button>
   </div>
 </nav>
+	<div class="container">
+		<div class="jumbotron">
+			<h1><fmt:message key='welcome.heading'/></h1>
+			<p><fmt:message key='welcome.intro'/></p>
+		</div>
+	</div>
+	
+	<!-- Add new modal -->
+	<form class="modal fade" action="<c:url value='/api/v1/key'/>" id="add-alias-form">
+	  <div class="modal-dialog">
+	    <div class="modal-content">
+	      <div class="modal-header">
+	        <button type="button" class="close" data-dismiss="modal" aria-label="<fmt:message key='action.add'/>"><span aria-hidden="true">&times;</span></button>
+	        <h4 class="modal-title"><fmt:message key='add.heading'/></h4>
+	      </div>
+	      <div class="modal-body form-horizontal">
+<div class="form-group">
+    <label for="add-alias-alias" class="col-sm-2 control-label"><fmt:message key='alias.alias'/></label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="add-alias-alias" placeholder="<fmt:message key='alias.alias.placeholder'/>">
+    </div>
+  </div>
+<div class="form-group">
+    <label for="add-alias-actual" class="col-sm-2 control-label"><fmt:message key='alias.actual'/></label>
+    <div class="col-sm-10">
+      <input type="text" class="form-control" id="add-alias-actual" placeholder="<fmt:message key='alias.actual.placeholder'/>">
+    </div>
+  </div>
+  	      </div>
+	      <div class="modal-footer">
+	        <button type="button" class="btn btn-default" data-dismiss="modal"><fmt:message key='action.close'/></button>
+	        <button type="button" class="btn btn-primary"><fmt:message key='action.save'/></button>
+	      </div>
+	    </div>
+	  </div>
+	</form>
 
 	<script src="js-lib/jquery-2.1.4.min.js"></script>
 	<script src="js-lib/bootstrap.min.js"></script>
