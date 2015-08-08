@@ -21,7 +21,7 @@
         <img src="images/sendmail-sobriquet-logo.svg" title="<fmt:message key='app.name'/>">
       </a>
       <h1 class="navbar-text"><fmt:message key='app.name'/></h1>
-      <form class="navbar-form navbar-left" role="search" method="get" action="<c:url value='/api/v1/find'/>">
+      <form class="navbar-form navbar-left" role="search" id="search-form" method="get" action="<c:url value='/api/v1/find'/>">
         <div class="form-group">
           <input type="search" class="form-control" placeholder="<fmt:message key='search.query.placeholder'/>" name="alias">
         </div>
@@ -34,10 +34,38 @@
 	</button>
   </div>
 </nav>
-	<div class="container">
+	<div class="container welcome">
 		<div class="jumbotron">
 			<h1><fmt:message key='welcome.heading'/></h1>
 			<p><fmt:message key='welcome.intro'/></p>
+		</div>
+	</div>
+	
+	<div class="container hidden" id="search-results">
+		<div class="row">
+			<div class="col-xs-12 col-md-6">
+				<p class="empty-results"><fmt:message key='search.results.empty'/></p>
+				<table class="table table-striped nonempty-results">
+					<thead>
+						<tr>
+							<th>#</th>
+							<th><fmt:message key='alias.alias'/></th>
+							<th><fmt:message key='alias.actual'/></th>
+							<th></th>
+						</tr>
+					</thead>
+					<tbody>
+						<tr class="template">
+							<td class="index"></td>
+							<td class="alias"></td>
+							<td class="actuals"></td>
+							<td>
+								<!-- TODO: actions -->
+							</td>
+						</tr>
+					</tbody>
+				</table>
+			</div>
 		</div>
 	</div>
 	
@@ -50,22 +78,22 @@
 	        <h4 class="modal-title"><fmt:message key='add.heading'/></h4>
 	      </div>
 	      <div class="modal-body form-horizontal">
-<div class="form-group">
-    <label for="add-alias-alias" class="col-sm-2 control-label"><fmt:message key='alias.alias'/></label>
-    <div class="col-sm-10">
-      <input type="text" class="form-control" id="add-alias-alias" placeholder="<fmt:message key='alias.alias.placeholder'/>">
-    </div>
-  </div>
-<div class="form-group">
-    <label for="add-alias-actual" class="col-sm-2 control-label"><fmt:message key='alias.actual'/></label>
-    <div class="col-sm-10">
-      <input type="text" class="form-control" id="add-alias-actual" placeholder="<fmt:message key='alias.actual.placeholder'/>">
-    </div>
-  </div>
+			  <div class="form-group">
+			    <label for="add-alias-alias" class="col-sm-2 control-label"><fmt:message key='alias.alias'/></label>
+			    <div class="col-sm-10">
+			      <input type="text" class="form-control" name="alias" required id="add-alias-alias" placeholder="<fmt:message key='alias.alias.placeholder'/>">
+			    </div>
+			  </div>
+			  <div class="form-group">
+			    <label for="add-alias-actual" class="col-sm-2 control-label"><fmt:message key='alias.actual'/></label>
+			    <div class="col-sm-10">
+			      <input type="text" class="form-control" name="actual" required id="add-alias-actual" placeholder="<fmt:message key='alias.actual.placeholder'/>">
+			    </div>
+			  </div>
   	      </div>
 	      <div class="modal-footer">
 	        <button type="button" class="btn btn-default" data-dismiss="modal"><fmt:message key='action.close'/></button>
-	        <button type="button" class="btn btn-primary"><fmt:message key='action.save'/></button>
+	        <button type="submit" class="btn btn-primary"><fmt:message key='action.save'/></button>
 	      </div>
 	    </div>
 	  </div>

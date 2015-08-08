@@ -3,4 +3,5 @@
 	<Environment name="ldapBaseDn" value="ou=Sendmail" type="java.lang.String" override="false"/>
 	<Environment name="ldapUserDn" value="cn=Sendmail,dc=example,dc=com" type="java.lang.String" override="false"/>
 	<Environment name="ldapPassword" value="secret" type="java.lang.String" override="false"/>
+	<Environment name="i18n.cacheSecs" value="-1" type="java.lang.Integer" override="false"/>
 </Context>

@@ -28,3 +28,8 @@ p {
 	font-family: 'Special Elite', monospace;
 
 }
+
+.hidden,
+.template {
+	display: none;
+}

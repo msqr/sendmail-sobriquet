@@ -88,6 +88,7 @@ public class AliasController {
 	 * @return The response.
 	 */
 	@RequestMapping(method = RequestMethod.PUT, path = "/{key}", consumes = "text/plain")
+	@ResponseBody
 	public Response<Object> add(@PathVariable("key") String key, @RequestBody String value) {
 		BasicAlias alias = new BasicAlias(key, value);
 		aliasDao.store(alias);
@@ -102,6 +103,7 @@ public class AliasController {
 	 * @return The response.
 	 */
 	@RequestMapping(method = RequestMethod.DELETE, path = "/{key}")
+	@ResponseBody
 	public Response<Object> delete(@PathVariable("key") String key) {
 		Alias alias = aliasDao.get(key);
 		if ( alias != null ) {
