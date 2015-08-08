@@ -24,6 +24,7 @@
 
 package magoffin.matt.sobriquet.web.config;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
@@ -47,6 +48,9 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @Configuration
 @ComponentScan(basePackages = { "magoffin.matt.sobriquet.web" })
 public class MvcConfig extends WebMvcConfigurerAdapter {
+
+	@Value("${i18n.cacheSecs}")
+	private int i18nCacheSecs = -1;
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -76,6 +80,7 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 		ReloadableResourceBundleMessageSource resource = new ReloadableResourceBundleMessageSource();
 		resource.setBasename("/WEB-INF/messages");
 		resource.setDefaultEncoding("UTF-8");
+		resource.setCacheSeconds(i18nCacheSecs);
 		return resource;
 	}
 
