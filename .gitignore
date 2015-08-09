@@ -1,2 +1,2 @@
-*.bbprojectd
-
+_site
+.sass-cache

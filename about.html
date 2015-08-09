@@ -1,0 +1,24 @@
+---
+layout: page
+title: About
+permalink: /about/
+---
+
+<p>Sendmail Sobriquet was born out of the frustration of managing many hundreds of email aliases for my personal <a href="https://en.wikipedia.org/wiki/Sendmail">Sendmail</a> server installation. As it happens, I value my privacy and like to create a new email for <i>every</i> company that asks me for my email address. <strike>If</strike> When I start to receive 3<sup>rd</sup>-party spam at one of those made-up email addresses, I immediately know who sold/disclosed/shared/leaked my email and I can respond appropriately. I create the new email addresses as <i>aliases</i> to a real email address by adding entries to Sendmail's alias database, which was (be default) set up as a simple text file: <code>/etc/mail/alaises</code>.</p>
+
+<p>Many years went by, and several hundreds of aliases were added to <code>/etc/mail/alaises</code>. I grew increasingly tired of this process:</p>
+
+<ol>
+	<li><code>ssh</code> to mail server</li>
+	<li><code>edit /etc/mail/aliases</code> (add, remove, etc.)</li>
+	<li><code>newaliases</code> (to compile the text file into a binary database)</li>
+	<li><code>exit</code></li>
+</ol>
+
+<p>I <i>really</i> wanted an easier way for me, and even my family, to add and remove aliases.</p>
+
+<p>Finally I decided to do something about it, and while researching how I might manage that <code>/etc/mail/aliases</code> file I discovered that Sendmail supports using a directory server, via the <a href="https://en.wikipedia.org/wiki/Lightweight_Directory_Access_Protocol">LDAP</a> protocol, to host the alias database. Eureka! I already had <a href="http://www.openldap.org/">OpenLDAP</a> running, and I know how to manage that... why not create a web front-end for editing Sendmail LDAP alias entries?</p>
+
+<p>After a few days of hacking, Sendmail Sobrique was born.</p>
+
+<p class="sig">--m@</p>

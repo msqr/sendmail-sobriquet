@@ -1,0 +1,12 @@
+# Site settings
+title: Sendmail Sobriquet
+email: github.com@msqr.us
+description: >
+  A simple web-based management tool for a Sendmail alias database
+  stored in an LDAP directory server.
+baseurl: ""
+#url: "http://yourdomain.com"
+github_username:  msqr
+
+# Build settings
+markdown: kramdown
