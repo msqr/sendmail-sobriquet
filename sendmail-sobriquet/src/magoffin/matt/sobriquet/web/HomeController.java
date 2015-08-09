@@ -43,4 +43,9 @@ public class HomeController {
 		return "home";
 	}
 
+	@RequestMapping(path = "/version", method = RequestMethod.GET)
+	public String version() {
+		return "version";
+	}
+
 }
