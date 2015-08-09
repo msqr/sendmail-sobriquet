@@ -4,7 +4,7 @@ email: github.com@msqr.us
 description: >
   A simple web-based management tool for a Sendmail alias database
   stored in an LDAP directory server.
-#baseurl: ""
+baseurl: "/sendmail-sobriquet"
 #url: "http://yourdomain.com"
 github_username:  msqr
 
