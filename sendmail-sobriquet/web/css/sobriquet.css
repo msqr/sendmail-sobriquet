@@ -24,9 +24,14 @@ h1.navbar-text {
 	margin: 15px 0 0 0;
 }
 
+h4 {
+	font-family: 'Special Elite', monospace;
+	font-size: 18px;
+	color: #2d2b28 !important;
+}
+
 p {
 	font-family: 'Special Elite', monospace;
-
 }
 
 .hidden,
@@ -40,4 +45,9 @@ p {
 
 .btn-danger .confirm {
 	display: inherit !important;
+}
+
+.modal-body .scrolling {
+	max-height: 200px;
+	overflow-y: auto;
 }

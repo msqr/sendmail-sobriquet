@@ -25,6 +25,8 @@
 package magoffin.matt.sobriquet.web.config;
 
 import javax.servlet.Filter;
+import javax.servlet.MultipartConfigElement;
+import javax.servlet.ServletRegistration;
 import org.springframework.web.filter.CharacterEncodingFilter;
 import org.springframework.web.servlet.support.AbstractAnnotationConfigDispatcherServletInitializer;
 
@@ -59,6 +61,12 @@ public class WebAppInitializer extends AbstractAnnotationConfigDispatcherServlet
 	@Override
 	protected Filter[] getServletFilters() {
 		return new Filter[] { new CharacterEncodingFilter() };
+	}
+
+	@Override
+	protected void customizeRegistration(ServletRegistration.Dynamic registration) {
+		registration.setMultipartConfig(new MultipartConfigElement(null, 1024 * 1024 * 5,
+				1024 * 1024 * 5 * 5, 1024 * 1024));
 	}
 
 }

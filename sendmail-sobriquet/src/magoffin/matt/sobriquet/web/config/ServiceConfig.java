@@ -25,7 +25,9 @@
 package magoffin.matt.sobriquet.web.config;
 
 import magoffin.matt.sobriquet.api.AliasDao;
+import magoffin.matt.sobriquet.api.IOService;
 import magoffin.matt.sobriquet.sendmail.SendmailAliasDao;
+import magoffin.matt.sobriquet.sendmail.SendmailIOService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -83,6 +85,12 @@ public class ServiceConfig {
 		SendmailAliasDao dao = new SendmailAliasDao(ldapTemplate());
 
 		return dao;
+	}
+
+	@Bean
+	public IOService ioService() {
+		SendmailIOService svc = new SendmailIOService();
+		return svc;
 	}
 
 }

@@ -7,16 +7,16 @@
 'use strict';
 
 var aliasUrlTemplate = '';
+var importCarousel;
 
-function renderSearchResults(results) {
-	var resultsContainer = $('#search-results'),
-		templateRow = resultsContainer.find('.template'),
+function renderAliasResults(results, resultsContainer) {
+	var templateRow = resultsContainer.find('.template'),
 		rowContainer = templateRow.parent(),
-		haveResults = (results && Array.isArray(results.results) && results.results.length > 0);
+		haveResults = (results && Array.isArray(results) && results.length > 0);
 	
 	if ( haveResults ) {
 		rowContainer.children(':not(.template)').remove();
-		results.results.forEach(function(result, idx) {
+		results.forEach(function(result, idx) {
 			var html = templateRow.clone(true),
 				actuals = (Array.isArray(result.actuals) ? result.actuals.join(', ') : '');
 			html.removeClass('template');
@@ -28,10 +28,17 @@ function renderSearchResults(results) {
 		});
 	}
 	
-	$('.welcome').addClass('hidden');
 	resultsContainer.find('.empty-results').toggleClass('hidden', haveResults);
 	resultsContainer.find('.nonempty-results').toggleClass('hidden', !haveResults);
-	resultsContainer.removeClass('hidden');
+	
+	return haveResults;
+}
+
+function renderSearchResults(results) {
+	var resultsContainer = $('#search-results');
+	renderAliasResults(results ? results.results : undefined, resultsContainer);
+	$('.welcome').addClass('hidden');
+    resultsContainer.removeClass('hidden');
 }
 
 function isEmptyText(value) {
@@ -44,7 +51,7 @@ function submitSearch(form) {
 		// no query
 		return;
 	}
-	$.getJSON(form.action, { alias : aliasQuery }, function(data) {
+	$.getJSON(form.action, { alias : aliasQuery, actual : aliasQuery }, function(data) {
 		if ( data && data.success ) {
 			renderSearchResults(data.data);
 		}
@@ -113,6 +120,45 @@ function deleteAlias(button) {
 	}
 }
 
+function showImportForm(form) {
+	form = $(form);
+	form.modal('show');
+}
+
+function renderImportResults(results) {
+	renderAliasResults(results, $('#import-results'));
+}
+
+function submitImportForm(form) {
+	var formData = new FormData(form),
+		to = form.elements['_to'].value;
+	$.ajax({
+		type : 'POST',
+		url : form.action,
+		dataType : 'json',
+		data : formData,
+        processData: false,
+        contentType: false
+	}).done(function(data) {
+		if ( to === 'verify' && data && data.success ) {
+			renderImportResults(data.data);
+			form.elements['_to'].value = 'save';
+			importCarousel.carousel('next');
+			$(form).find('button.back').show();
+		} else if ( to === 'save' ) {
+			$(form).modal('hide');
+		}
+	}).fail(function(xhr, status, error) {
+		// TODO
+	});
+}
+
+function importGotoFirstStep(button) {
+	importCarousel.carousel(0);
+	button.form.elements['_to'].value = 'verify';
+	$(button).hide();
+}
+
 function init() {
 	$('#search-form').submit(function(event) {
 		event.preventDefault();
@@ -130,10 +176,29 @@ function init() {
 		$('#add-alias-alias').focus();
 	}).on('hidden.bs.modal', function(event) {
 		this.reset();
+		this.elements['_to'].value = 'verify'; // hidden form elements don't reset via reset()
 	});
 	$('#search-results').on('click', 'button.delete-alias', function(event) {
 		deleteAlias(this);
 	});
+	$('#import-aliases-form').submit(function(event) {
+		event.preventDefault();
+		submitImportForm(this);
+		return false;
+	}).on('hidden.bs.modal', function(event) {
+		importCarousel.carousel(0);
+		this.reset();
+	}).find('button.back').hide().on('click', function() {
+		importGotoFirstStep(this);
+	});
+	$('a.action-import').on('click', function(event) {
+		event.preventDefault();
+		showImportForm($('#import-aliases-form'));
+	});
+	$('#import-carousel').each(function() {
+		// stash a ref to the alias base URL for add/delete ops
+		importCarousel = $(this);
+	}).carousel({interval : false, keyboard : false});
 }
 
 $(init);
