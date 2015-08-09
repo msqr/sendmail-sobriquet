@@ -8,23 +8,34 @@
 		<conf name="runtime" visibility="public" description="Sendmail Sorbiquet"/>
 		<conf name="test" visibility="private" description="unit testing" extends="compile"/>
 	</configurations>
-	<dependencies defaultconfmapping="runtime->default(runtime);compile->default(compile);test->runtime(default)">
+	<dependencies defaultconfmapping="runtime->default(runtime);compile->default(compile);test->default(compile)">
 		
 		<!-- Logging, Slf4j via Log4j 2 -->
 		<dependency org="org.apache.logging.log4j" name="log4j-slf4j-impl" rev="2.3" />
+		<dependency org="org.apache.logging.log4j" name="log4j-api" rev="2.3" />
 		<dependency org="org.apache.logging.log4j" name="log4j-core" rev="2.3" />
 		<dependency org="org.slf4j" name="slf4j-api" rev="1.7.12" />
 		<dependency org="org.slf4j" name="jcl-over-slf4j" rev="1.7.12" />
 		
 		<!-- Spring -->
-		<dependency org="org.springframework" name="spring-aop" rev="3.2.13.RELEASE" />
-		<dependency org="org.springframework" name="spring-context" rev="3.2.13.RELEASE" />
-		<dependency org="org.springframework" name="spring-core" rev="3.2.13.RELEASE" />
-		<dependency org="org.springframework" name="spring-webmvc" rev="3.2.13.RELEASE" />
+		<dependency org="org.springframework" name="spring-aop" rev="${version.spring}" />
+		<dependency org="org.springframework" name="spring-context" rev="${version.spring}" />
+		<dependency org="org.springframework" name="spring-core" rev="${version.spring}" />
+		<dependency org="org.springframework" name="spring-tx" rev="${version.spring}" />
+		<dependency org="org.springframework" name="spring-webmvc" rev="${version.spring}" />
 		
-		<!-- Spring LDAP -->
-		<dependency org="org.springframework.ldap" name="spring-ldap-core" rev="2.0.3.RELEASE" />
+		<!-- LDAP -->
+		<dependency org="org.springframework.ldap" name="spring-ldap-core" rev="2.0.3.RELEASE">
+			<exclude org="org.springframework"/>
+		</dependency>
+		<!-- Spring LDAP has LDIF parsing, but not generating! Bummer -->
+		<dependency org="com.unboundid" name="unboundid-ldapsdk" rev="3.0.0"/>
 		
+		<!-- JSON -->
+		<dependency org="com.fasterxml.jackson.core" name="jackson-annotations" rev="${version.jackson}"/>
+		<dependency org="com.fasterxml.jackson.core" name="jackson-core" rev="${version.jackson}"/>
+		<dependency org="com.fasterxml.jackson.core" name="jackson-databind" rev="${version.jackson}"/>
+
 		<!-- Web runtime -->
 		<dependency org="org.mortbay.jetty" name="jetty-util" rev="6.1.26" />
 		<dependency org="taglibs" name="standard" rev="1.1.2" conf="runtime"/>
@@ -43,6 +54,12 @@
     		<exclude module="servlet-api"/>
     		<exclude module="junit"/>
 		</dependency>
+		<dependency org="com.btmatthews.ldapunit" name="ldapunit" rev="1.1.0" conf="test">
+			<exclude org="com.unboundid"/>
+		</dependency>
 
+		<!-- Global excludes -->
+		<exclude org="commons-logging"/>
+		
 	</dependencies>
 </ivy-module>

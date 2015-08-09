@@ -1,0 +1,29 @@
+# Basic system aliases -- these MUST be present
+MAILER-DAEMON: postmaster
+postmaster: root
+
+# General redirections for pseudo accounts
+_dhcp:  root
+_pflogd: root
+auditdistd:     root
+bin:    root
+bind:   root
+daemon: root
+games:  root
+hast:   root
+kmem:   root
+# NOTE: /var/msgs and /var/msgs/bounds must be owned by sendmail's
+#       DefaultUser (defaults to mailnull) for the msgs alias to work.
+#
+# msgs: "| /usr/bin/msgs -s"
+
+# bit-bucket: /dev/null
+# dev-null: bit-bucket
+
+root:                   dude
+pgsql:                  dude
+munin:                  dude
+web-admin:              dude
+sysadmin:               dude
+admin:                  dude
+foo.bar.com:          	dude

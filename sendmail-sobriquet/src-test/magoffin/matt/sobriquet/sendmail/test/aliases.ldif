@@ -1,0 +1,180 @@
+dn: sendmailMTAKey=MAILER-DAEMON,ou=Test
+objectClass: sendmailMTAAliasObject
+objectClass: sendmailMTAAlias
+objectClass: sendmailMTA
+objectClass: top
+sendmailMTAKey: MAILER-DAEMON
+sendmailMTAAliasValue: postmaster
+sendmailMTAAliasGrouping: aliases
+sendmailMTACluster: example.com
+
+dn: sendmailMTAKey=postmaster,ou=Test
+objectClass: sendmailMTAAliasObject
+objectClass: sendmailMTAAlias
+objectClass: sendmailMTA
+objectClass: top
+sendmailMTAKey: postmaster
+sendmailMTAAliasValue: root
+sendmailMTAAliasGrouping: aliases
+sendmailMTACluster: example.com
+
+dn: sendmailMTAKey=_dhcp,ou=Test
+objectClass: sendmailMTAAliasObject
+objectClass: sendmailMTAAlias
+objectClass: sendmailMTA
+objectClass: top
+sendmailMTAKey: _dhcp
+sendmailMTAAliasValue: root
+sendmailMTAAliasGrouping: aliases
+sendmailMTACluster: example.com
+
+dn: sendmailMTAKey=_pflogd,ou=Test
+objectClass: sendmailMTAAliasObject
+objectClass: sendmailMTAAlias
+objectClass: sendmailMTA
+objectClass: top
+sendmailMTAKey: _pflogd
+sendmailMTAAliasValue: root
+sendmailMTAAliasGrouping: aliases
+sendmailMTACluster: example.com
+
+dn: sendmailMTAKey=auditdistd,ou=Test
+objectClass: sendmailMTAAliasObject
+objectClass: sendmailMTAAlias
+objectClass: sendmailMTA
+objectClass: top
+sendmailMTAKey: auditdistd
+sendmailMTAAliasValue: root
+sendmailMTAAliasGrouping: aliases
+sendmailMTACluster: example.com
+
+dn: sendmailMTAKey=bin,ou=Test
+objectClass: sendmailMTAAliasObject
+objectClass: sendmailMTAAlias
+objectClass: sendmailMTA
+objectClass: top
+sendmailMTAKey: bin
+sendmailMTAAliasValue: root
+sendmailMTAAliasGrouping: aliases
+sendmailMTACluster: example.com
+
+dn: sendmailMTAKey=bind,ou=Test
+objectClass: sendmailMTAAliasObject
+objectClass: sendmailMTAAlias
+objectClass: sendmailMTA
+objectClass: top
+sendmailMTAKey: bind
+sendmailMTAAliasValue: root
+sendmailMTAAliasGrouping: aliases
+sendmailMTACluster: example.com
+
+dn: sendmailMTAKey=daemon,ou=Test
+objectClass: sendmailMTAAliasObject
+objectClass: sendmailMTAAlias
+objectClass: sendmailMTA
+objectClass: top
+sendmailMTAKey: daemon
+sendmailMTAAliasValue: root
+sendmailMTAAliasGrouping: aliases
+sendmailMTACluster: example.com
+
+dn: sendmailMTAKey=games,ou=Test
+objectClass: sendmailMTAAliasObject
+objectClass: sendmailMTAAlias
+objectClass: sendmailMTA
+objectClass: top
+sendmailMTAKey: games
+sendmailMTAAliasValue: root
+sendmailMTAAliasGrouping: aliases
+sendmailMTACluster: example.com
+
+dn: sendmailMTAKey=hast,ou=Test
+objectClass: sendmailMTAAliasObject
+objectClass: sendmailMTAAlias
+objectClass: sendmailMTA
+objectClass: top
+sendmailMTAKey: hast
+sendmailMTAAliasValue: root
+sendmailMTAAliasGrouping: aliases
+sendmailMTACluster: example.com
+
+dn: sendmailMTAKey=kmem,ou=Test
+objectClass: sendmailMTAAliasObject
+objectClass: sendmailMTAAlias
+objectClass: sendmailMTA
+objectClass: top
+sendmailMTAKey: kmem
+sendmailMTAAliasValue: root
+sendmailMTAAliasGrouping: aliases
+sendmailMTACluster: example.com
+
+dn: sendmailMTAKey=root,ou=Test
+objectClass: sendmailMTAAliasObject
+objectClass: sendmailMTAAlias
+objectClass: sendmailMTA
+objectClass: top
+sendmailMTAKey: root
+sendmailMTAAliasValue: dude
+sendmailMTAAliasGrouping: aliases
+sendmailMTACluster: example.com
+
+dn: sendmailMTAKey=pgsql,ou=Test
+objectClass: sendmailMTAAliasObject
+objectClass: sendmailMTAAlias
+objectClass: sendmailMTA
+objectClass: top
+sendmailMTAKey: pgsql
+sendmailMTAAliasValue: dude
+sendmailMTAAliasGrouping: aliases
+sendmailMTACluster: example.com
+
+dn: sendmailMTAKey=munin,ou=Test
+objectClass: sendmailMTAAliasObject
+objectClass: sendmailMTAAlias
+objectClass: sendmailMTA
+objectClass: top
+sendmailMTAKey: munin
+sendmailMTAAliasValue: dude
+sendmailMTAAliasGrouping: aliases
+sendmailMTACluster: example.com
+
+dn: sendmailMTAKey=web-admin,ou=Test
+objectClass: sendmailMTAAliasObject
+objectClass: sendmailMTAAlias
+objectClass: sendmailMTA
+objectClass: top
+sendmailMTAKey: web-admin
+sendmailMTAAliasValue: dude
+sendmailMTAAliasGrouping: aliases
+sendmailMTACluster: example.com
+
+dn: sendmailMTAKey=sysadmin,ou=Test
+objectClass: sendmailMTAAliasObject
+objectClass: sendmailMTAAlias
+objectClass: sendmailMTA
+objectClass: top
+sendmailMTAKey: sysadmin
+sendmailMTAAliasValue: dude
+sendmailMTAAliasGrouping: aliases
+sendmailMTACluster: example.com
+
+dn: sendmailMTAKey=admin,ou=Test
+objectClass: sendmailMTAAliasObject
+objectClass: sendmailMTAAlias
+objectClass: sendmailMTA
+objectClass: top
+sendmailMTAKey: admin
+sendmailMTAAliasValue: dude
+sendmailMTAAliasGrouping: aliases
+sendmailMTACluster: example.com
+
+dn: sendmailMTAKey=foo.bar.com,ou=Test
+objectClass: sendmailMTAAliasObject
+objectClass: sendmailMTAAlias
+objectClass: sendmailMTA
+objectClass: top
+sendmailMTAKey: foo.bar.com
+sendmailMTAAliasValue: dude
+sendmailMTAAliasGrouping: aliases
+sendmailMTACluster: example.com
+

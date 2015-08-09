@@ -1,0 +1,580 @@
+<?xml version="1.0"?>
+<!--
+  Copyright (c) 2015 Matt Magoffin
+  
+  This program is free software; you can redistribute it and/or 
+  modify it under the terms of the GNU General Public License as 
+  published by the Free Software Foundation; either version 2 of 
+  the License, or (at your option) any later version.
+  
+  This program is distributed in the hope that it will be useful, 
+  but WITHOUT ANY WARRANTY; without even the implied warranty of 
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU 
+  General Public License for more details.
+  
+  You should have received a copy of the GNU General Public License 
+  along with this program; if not, write to the Free Software 
+  Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA 
+  02111-1307 USA
+-->
+<project name="Sendmail Sobriquet" default="help"
+	 xmlns:ivy="antlib:org.apache.ivy.ant">
+
+	<property file="build.properties" />
+	
+	<property name="dir.base" value="${basedir}"/>
+	<property name="dir.source" value="src"/>
+	<property name="dir.source.test" value="src-test"/>
+	<property name="dir.build" value="${dir.base}/build/ant" />
+	<property name="dir.dist" value="dist"/>
+	<property name="dir.lib" value="lib"/>
+	<property name="dir.web" value="web"/>
+	<property name="dir.web.lib" value="${dir.web}/WEB-INF/lib"/>
+	
+	<property name="app.name" value="sendmail-sobriquet" />
+	<property name="build.name" value="Sendmail Sobriquet"/>
+	<property name="app.path" value="/${app.name}" />
+	<property name="app.home" value="${dir.build}/${app.name}/web"/>
+	<property name="app.home.backup" value="${app.home}.bak"/>
+	
+	<property name="dir.app.dest" value="${dir.build}/${app.name}"/>
+	<property name="dir.compile.src" value="${dir.build}/src"/>
+	<property name="dir.compile.dest" value="${dir.app.dest}/WEB-INF/classes"/>
+	<property name="compile.debug" value="true" />
+	<property name="compile.deprecation" value="false" />
+	<property name="compile.optimize" value="true" />
+	<property name="compile.nowarn" value="true" />	
+
+	<!-- JavaDoc support -->
+	<property name="dir.javadoc" value="${dir.build}/javadoc"/>
+	<property name="javadoc.stylesheet" value="defs/docs/javadoc.css"/>
+
+	<property name="build.version" value="(local build)"/>
+	
+	<property name="env.src" value="local" />
+	<property name="dir.env" value="environment/${env.src}"/>
+	
+	<property name="git.tag" value="1.0"/>
+	<property name="git.tag.base" value="${git.tag}"/>
+	<property name="git.tag.path" value="refs/tags/${git.tag}"/>
+	<property name="git.url" value="https://github.com/msqr/sendmail-sobriquet.git"/>
+	<property name="git.dir.repo" value="${basedir}/build/repo"/>
+	<property name="git.dir.build" value="${git.dir.repo}/sendmail-sobriquet"/>
+	<property name="git.env.src" value="example"/>
+
+	<tstamp>
+		<format property="build.time" pattern="MM/dd/yyyy hh:mm aa z" />
+	</tstamp>
+	<property name="version.txt.name" value="version.txt" />
+	
+	<path id="lib.path">
+		<fileset dir="${dir.web.lib}" includes="*.jar"/>
+	</path>
+
+	<target name="init">
+		<mkdir dir="${dir.build}" />
+		<mkdir dir="${dir.generated}" />
+		<mkdir dir="${dir.dist}"/>
+	</target>
+
+	<target name="env-local-cond">
+		<condition property="localEnv">
+			<equals arg1="${env.src}" arg2="local"/>
+		</condition>
+	</target>
+	
+	<!-- Ivy integration -->
+
+	<target name="ivy-init">
+		<taskdef resource="org/apache/ivy/ant/antlib.xml"
+			uri="antlib:org.apache.ivy.ant"
+			classpath="${dir.lib}/ivy-2.2.0.jar"/>
+		<ivy:settings file="ivysettings.xml"/>
+	</target>
+	
+	<target name="lib-resolve" depends="ivy-init">
+		<echo message="[====&gt; Resolving dependencies (compile) &lt;====]"/>
+		<ivy:resolve file="${basedir}/ivy.xml" type="jar,bundle" conf="compile"/>
+	</target>
+	
+	<target name="check-has-env">
+		<echo>Checking for enivornment ${dir.env}</echo>
+		<available file="${dir.env}" type="dir" property="has.env" />
+	</target>
+
+	<target name="prepare-env" depends="check-has-env" if="has.env">
+		<mkdir dir="${dir.compile.dest}"/>
+		<copy todir="${dir.compile.dest}" filtering="yes">
+			<fileset dir="${dir.env}" includes="**" excludes="README*"/>
+			<!--filterset refid="password.filters"/-->
+		</copy>
+	</target>
+
+	<!-- Prepare WAR structure -->
+	<target name="prepare" description="Prepare WAR build structure"
+		depends="prepare-env,ivy-init">
+		
+		<!-- copy non-environment and non-brand source properties -->
+		<mkdir dir="${dir.compile.dest}"/>
+		<copy todir="${dir.compile.dest}" includeemptydirs="no">
+			<fileset dir="${dir.source}">
+				<exclude name="**/*.java"/>
+			</fileset>
+		</copy>
+		
+		<!-- copy web resourses -->
+		<copy todir="${dir.app.dest}">
+			<fileset dir="${dir.web}">
+				<include name="**"/>
+				<exclude name="version.jsp"/>
+				<exclude name="WEB-INF/classes/**"/>
+				<exclude name="WEB-INF/jsp/version.jsp"/>
+			</fileset>
+		</copy>
+		
+		<!-- copy and filter version.jsp file -->
+		<copy todir="${dir.app.dest}">
+			<fileset dir="${dir.web}">
+				<include name="WEB-INF/jsp/version.jsp"/>
+			</fileset>
+			<filterset>
+				<filter token="APP_NAME" value="${build.name}" />
+				<filter token="BUILD_VERSION" value="${build.version}" />
+				<filter token="BUILD_DATE" value="${build.time}" />
+				<filter token="BUILD_TARGET_ENV" value="${env.src}" />
+			</filterset>
+		</copy>
+
+		<!-- Copy Ivy JAR files -->
+		<ivy:retrieve pattern="${dir.app.dest}/WEB-INF/lib/[artifact]-[revision].[ext]" conf="runtime" />
+		
+		<!-- The above might include some .txt license files and source jars, so remove them -->
+		<delete failonerror="false" dir="${dir.app.dest}/WEB-INF/lib" includes="*" excludes="*.jar"/>
+		<delete failonerror="false" dir="${dir.app.dest}/WEB-INF/lib" includes="*-sources*.jar"/>
+	</target>
+
+	<target name="prepare.compile">
+		<mkdir dir="${dir.compile.dest}"/>
+		<mkdir dir="${dir.compile.src}"/>
+		<copy todir="${dir.compile.src}">
+			<fileset dir="${dir.source}">
+				<include name="**/*.java"/>
+			</fileset>
+		</copy>
+	</target>
+	
+	<target name="compile.path" depends="lib-resolve">
+		<ivy:cachepath pathid="ivy.lib.path" type="jar,bundle" conf="compile"/>
+		<path id="compile.path">
+			<!--pathelement location="${dir.compile.dest}"/-->
+			<path refid="ivy.lib.path"/>
+			<path refid="lib.path"/>
+		</path>
+	</target>
+
+	<target name="compile" description="Compile source Java files"
+		depends="prepare.compile,compile.path">
+		<javac srcdir="${dir.compile.src}"
+				destdir="${dir.compile.dest}"
+				debug="${compile.debug}" 
+				deprecation="${compile.deprecation}" 
+				optimize="${compile.optimize}" 
+				nowarn="${compile.nowarn}"
+				target="1.6"
+				source="1.6"
+				includeantruntime="no">
+			<classpath refid="compile.path" />
+		</javac>
+
+		<!-- Copy properties, META-INF, etc -->
+		<copy todir="${dir.compile.dest}">
+			<fileset dir="${dir.source}" includes="**" excludes="**/*.java"/>
+		</copy>
+	</target>
+
+	<target name="javadoc" depends="init,compile.path"
+		description="Generate JavaDoc API">
+		<mkdir dir="${dir.javadoc}"/>
+		
+		<!-- Copy source to build dir -->
+		<mkdir dir="${dir.build}/javadoc-source"/>
+		<copy todir="${dir.build}/javadoc-source">
+			<fileset dir="${dir.source}" includes="**"/>
+		</copy>
+		
+		<javadoc packagenames="magoffin.matt.tidbits.*"
+			classpathref="compile.path"
+			sourcepath="${dir.build}/javadoc-source"
+			defaultexcludes="yes"
+			destdir="${dir.javadoc}"
+			author="true"
+			version="true"
+			use="true"
+			windowtitle="${build.name} {build.version}">
+			<doctitle>Tidbits: a friendly little note database</doctitle>
+		</javadoc>
+		<echo message="JavaDocs built to ${dir.javadoc}"/>
+	</target>
+
+	<!-- Create the Tidbits WAR file -->
+	<target name="war" description="Create application WAR"
+		depends="prepare,compile">
+		<zip destfile="${dir.build}/${app.name}.war">
+			<zipfileset dir="${dir.app.dest}">
+				<include name="**"/>
+			</zipfileset>
+		</zip>
+	</target>
+		
+	<target name="clean" description="Delete build files">
+		<delete dir="${dir.build}" />
+	</target>
+	
+	<target name="help">
+		<echo>TODO</echo>
+	</target>
+	
+	<target name="help-release" description="Help on creating releases">
+		<echo>First time clone: ant git-clone</echo>
+		<echo>Subsequent release:  ant -Dgit.tag=1.0 git-fetch git-checkout</echo>
+		<echo>Then to build release archives:</echo>
+		<echo>ant -Dgit.tag=1.0 git-release</echo>
+	</target>
+	
+	<!-- Git build targets -->
+
+	<macrodef name="git">
+	    <attribute name="command" />
+	    <attribute name="dir" default="" />
+	    <element name="args" optional="true" />
+	    <sequential>
+	        <echo message="git @{command}" />
+	        <exec executable="git" dir="@{dir}">
+	            <arg value="@{command}" />
+	            <args/>
+	        </exec>
+	    </sequential>
+	</macrodef>
+
+	<!-- 
+		Git Integration
+		
+		The Git Ant tasks are designed to work with Git tags, such that 
+		developers tag the repository with a name such as "v1.0" that 
+		represents a stable point in time to build from. Remember, to push
+		tags to the remote repository you must do a "git push - -tags".
+		Note there shouldn't be a space between those dashes... but in 
+		an XML comment we can't have two dashes next to each other.
+		
+		Next, to build the application from the Git tag, the following
+		steps must be performed: 
+		
+		1) Perform a git-clone to create a local repository. This normally
+		   only needs to be done one time, as subsequent builds can run
+		   git-fetch to update with the latest remote commits.
+		   
+		   $ ant git-clone
+		   
+		2) Perform a git-fetch to grab the latest from the remote repo.
+		
+		   $ ant git-fetch
+		   
+		3) Perform a git-checkout to switch to the desired tag:
+		
+		   $ ant -Dgit.tag=v1.0 git-checkout
+		   
+		4) Perform a git-release to build the application (you must pass both
+		   the git tag and environment name):
+		   
+		   $ ant -Dgit.tag=v1.0 git-release
+		   
+		Steps 2-4 can be combined into a single command, for example:
+		   
+		$ ant -Dgit.tag=v1.0 git-fetch git-checkout git-release
+	-->
+	
+	<target name="jgit-init">
+		<taskdef resource="org/eclipse/jgit/ant/ant-tasks.properties">
+			 <classpath>
+				 <pathelement location="${dir.lib}/git/org.eclipse.jgit-3.6.0.201412230720-r.jar"/>
+				 <pathelement location="${dir.lib}/git/org.eclipse.jgit.ant-3.6.0.201412230720-r.jar"/>
+				 <pathelement location="${dir.lib}/git/jsch-0.1.51.jar"/>
+			 </classpath>
+		 </taskdef>
+	</target>
+	
+	<target name="git-clone" description="Clone repo from git" depends="jgit-init">
+		<delete dir="${git.dir.repo}"/>
+		<mkdir dir="${git.dir.repo}"/>
+		<git-clone uri="${git.url}" dest="${git.dir.repo}"/>
+	</target>
+	
+	<target name="git-fetch" description="Fetch from remote git repo">
+		<git command="fetch" dir="${git.dir.repo}"/>
+	</target>
+	
+	<target name="git-checkout" description="Switch to a tag/branch" depends="jgit-init">
+		<git-checkout src="${git.dir.repo}" branch="${git.tag.path}" 
+			createbranch="false" force="false"/>
+	</target>
+	
+	<target name="git-prepare">
+	</target>
+
+	<!-- For local builds with production/staging targets, you can specify the absolute path
+	     for the dir.env property to copy your desired environment settings into the WAR,
+	     for example:
+	     
+	     ant -Dgit.env.src=$PWD/environment/local -Dgit.tag=2.1.b1 git-build
+	-->
+	<target name="git-build" depends="clean,git-prepare" description="Build from git tag versions">
+		
+		<property name="app.archive.name" value="${app.name}-${git.tag}"/>
+		
+		<echo />
+		<echo message="Building application version ${git.tag}..."/>
+
+		<ant dir="${git.dir.build}" target="war" inheritall="no">
+			<property name="build.version" value="${git.tag}"/>
+			<property name="dir.build" value="${dir.build}"/>
+			<property name="app.name" value="${app.archive.name}"/>
+			<property name="dir.dist" value="${dir.dist}"/>
+			<property name="env.src" value="${env.src}"/>
+			<property name="dir.env" value="${git.env.src}"/>
+		</ant>
+	</target>
+	
+	<target name="git-src-release" 
+		description="Build source release TAR from git tag versions">
+
+		<property name="app.archive.name" 
+			value="${app.name}-${git.tag}"/>
+		<property name="release-source-dir-name"
+			value="${app.archive.name}-src"/>
+		<property name="release-source-dir" 
+			value="${dir.build}/${release-source-dir-name}" />
+		<property name="release-source-name" 
+			value="${dir.dist}/${app.archive.name}-src.tbz2" />
+
+		<echo message="Building source release ${release-source-name}" />
+
+		<mkdir dir="${dir.dist}"/>
+		<delete dir="${release-source-dir}" />
+		<delete file="${release-source-name}" />
+
+		<echo message="Creating source README" />
+		<copy file="${git.dir.build}/defs/docs/release/README.src.txt" 
+			tofile="${release-source-dir}/README.txt" filtering="true">
+			<filterset>
+				<filter token="VERSION" value="${git.tag}" />
+				<filter token="BUILD_DATE" value="${build.time}" />
+			</filterset>
+		</copy>
+
+		<echo message="Creating LICENSE" />
+		<copy file="${git.dir.build}/defs/docs/release/LICENSE.txt" 
+			tofile="${release-source-dir}/LICENSE.txt" filtering="true">
+			<filterset>
+				<filter token="VERSION" value="${git.tag}" />
+				<filter token="BUILD_DATE" value="${build.time}" />
+			</filterset>
+		</copy>
+
+		<echo message="Copying source to tar base directory" />
+		<copy todir="${release-source-dir}">
+			<fileset dir="${git.dir.build}">
+				<include name="**" />
+				<include name=".*" />
+				<exclude name="build/**" />
+				<exclude name="dist/**" />
+				<exclude name="${dir.env}/local/**" />
+			</fileset>
+		</copy>
+
+		<tar tarfile="${release-source-name}" compression="bzip2" 
+			longfile="gnu">
+			<tarfileset dir="${dir.build}" 
+				includes="${release-source-dir-name}/**" />
+		</tar>
+		
+	</target>
+	
+	<!-- create binary release -->
+	<target name="git-bin-release" description="Build binary release TAR from git tag versions"
+		depends="git-build,git-javadoc,ivy-init">
+		
+		<property name="release-dir-name"
+			value="${app.archive.name}"/>
+		<property name="release-dir" 
+			value="${dir.build}/${release-dir-name}" />
+		<property name="release-name" 
+			value="${dir.dist}/${app.archive.name}.tbz2" />
+
+		<echo message="Building binary release ${release-name}" />
+
+		<delete dir="${release-dir}" />
+		<delete file="${release-name}" />
+
+		<echo message="Creating README" />
+		<copy file="${git.dir.build}/defs/docs/release/README.bin.txt" 
+			tofile="${release-dir}/README.txt" filtering="true">
+			<filterset>
+				<filter token="VERSION" value="${git.tag}" />
+				<filter token="BUILD_DATE" value="${build.time}" />
+			</filterset>
+		</copy>
+
+		<echo message="Creating LICENSE" />
+		<copy file="${git.dir.build}/defs/docs/release/LICENSE.txt" 
+			tofile="${release-dir}/LICENSE.txt" filtering="true">
+			<filterset>
+				<filter token="VERSION" value="${git.tag}" />
+				<filter token="BUILD_DATE" value="${build.time}" />
+			</filterset>
+		</copy>
+
+		<echo message="Creating NOTES" />
+		<copy filtering="true" todir="${release-dir}">
+			<fileset dir="${git.dir.build}/defs/docs/release/notes"
+				includes="notes-${git.tag.base}*.txt"/>
+			<mapper type="merge" to="NOTES.txt"/>
+			<filterset>
+				<filter token="VERSION" value="${git.tag}" />
+				<filter token="BUILD_DATE" value="${build.time}" />
+			</filterset>
+		</copy>
+
+		<!-- copy misc README files -->
+		<echo message="Copying README files" />
+		<copy filtering="true" todir="${release-dir}">
+			<fileset dir="${git.dir.build}/defs/docs"
+				includes="README-*.txt"/>
+			<filterset>
+				<filter token="VERSION" value="${git.tag}" />
+				<filter token="BUILD_DATE" value="${build.time}" />
+			</filterset>
+		</copy>
+		
+		<!-- copy licenses -->
+		<echo message="Copying licenses" />
+		<mkdir dir="${release-dir}/licenses"/>
+		<copy todir="${release-dir}/licenses" flatten="true">
+			<fileset dir="${git.dir.build}/defs/docs/licenses" includes="**/*.txt"/>
+			<filterset>
+				<filter token="VERSION" value="${git.tag}" />
+				<filter token="BUILD_DATE" value="${build.time}" />
+			</filterset>
+		</copy>
+		
+		<!-- create setup scripts -->
+		<echo message="Creating setup scripts" />
+		<mkdir dir="${release-dir}/setup/sql"/>
+		<copy filtering="false" todir="${release-dir}/setup/sql">
+			<fileset dir="${git.dir.build}/defs/sql"
+				includes="**"/>
+		</copy>
+		
+		<!-- copy JDBC drivers -->
+		<echo message="Copying JDBC drivers" />
+		<mkdir dir="${release-dir}/setup/lib"/>
+		<ivy:retrieve pattern="${release-dir}/setup/lib/[artifact]-[revision].[ext]" 
+			type="jar,bundle" conf="jdbc" />
+		
+		<!-- copy JavaDoc -->
+		<echo message="Copying JavaDoc"/>
+		<mkdir dir="${release-dir}/docs/api"/>
+		<copy todir="${release-dir}/docs/api" flatten="false">
+			<fileset dir="${dir.build}/javadoc" includes="**"/>
+		</copy>
+		
+		<!-- copy war, removing version from name -->
+		<copy file="${dir.build}/${app.archive.name}.war" 
+			tofile="${release-dir}/${app.name}.war"/>
+
+		<!-- tar it alll up -->
+		<tar tarfile="${release-name}" compression="bzip2" longfile="gnu">
+			<tarfileset dir="${dir.build}" 
+				includes="${release-dir-name}/**">
+			</tarfileset>
+		</tar>
+
+	</target>
+	
+	<target name="git-javadoc" depends="git-prepare"
+		description="Build the JavaDocs from git tag versions">
+
+		<echo />
+		<echo message="Building JavaDocs for version ${git.tag}..."/>
+
+		<ant dir="${git.dir.build}" target="javadoc" inheritall="no">
+			<property name="build.version" value="${git.tag}"/>
+			<property name="dir.build" value="${dir.build}"/>
+			<property name="dir.javadoc" value="${dir.javadoc}"/>
+			<property name="dir.dist" value="${dir.dist}"/>
+			<property name="app.name" value="${app.name}"/>
+		</ant>
+	
+	</target>
+
+	<target name="git-demo-release" description="Create the Live Demo from Git sources"
+		depends="git-prepare">
+		
+		<property name="app.archive.name" value="${app.name}-${git.tag}"/>
+		<property name="demo.build.dir" value="${app.archive.name}-livedemo"/>
+		
+		<!-- call the demo target on the code checked out from SVN -->
+		<ant dir="${git.dir.build}" inheritall="true" target="demo">
+			<property name="dir.build" value="${dir.build}"/>
+			<property name="build.version" value="${git.tag}"/>
+			<property name="env.src" value="demo"/>
+		</ant>
+		
+		<!-- copy licenses -->
+		<echo message="Copying licenses" />
+		<mkdir dir="${dir.build}/${demo.build.dir}/licenses"/>
+		<copy todir="${dir.build}/${demo.build.dir}/licenses" flatten="true">
+			<fileset dir="${git.dir.build}/defs/docs/licenses" includes="**/*.txt"/>
+			<filterset>
+				<filter token="VERSION" value="${git.tag}" />
+				<filter token="BUILD_DATE" value="${build.time}" />
+			</filterset>
+		</copy>
+		
+		<!-- copy demo build -->
+		<echo message="Copying demo build into Git tar structure"/>
+		<copy todir="${dir.build}/${demo.build.dir}">
+			<fileset dir="${dir.build}/${app.name}-demo" includes="**"/>
+		</copy>
+		
+		<!-- fix file permissions -->
+		<chmod perm="755">
+			<fileset dir="${dir.build}/${demo.build.dir}">
+				<include name="**/*.sh"/>
+			</fileset>
+		</chmod>
+		
+		<!-- tar it up -->
+		<tar destfile="${dir.dist}/${app.archive.name}-livedemo.tbz2" 
+				compression="bzip2" longfile="gnu">
+			<tarfileset dir="${dir.build}" mode="775">
+				<include name="${demo.build.dir}/**/*.sh"/>
+			</tarfileset>
+			<tarfileset dir="${dir.build}">
+				<include name="${demo.build.dir}/**"/>
+				<exclude name="${demo.build.dir}/**/*.sh"/>
+			</tarfileset>
+		</tar>
+	</target>
+	
+	<!-- 
+		Git Full Release
+		
+		Typically, after an initial "ant git-clone" you will perform a full release
+		like:
+		   
+		$ ant -Dgit.tag=1.8 git-fetch git-checkout git-release
+	-->
+	<target name="git-release" depends="clean,git-bin-release,git-src-release,git-demo-release" 
+		description="Create release artifacts from Git"/>
+	
+</project>
