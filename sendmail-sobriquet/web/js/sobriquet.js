@@ -59,7 +59,7 @@ function submitSearch(form) {
 }
 
 function aliasUrl(key) {
-	return aliasUrlTemplate.replace(/\w+$/, encodeURIComponent(key));
+	return aliasUrlTemplate.replace(/[^/;]+(;.*)?$/, encodeURIComponent(key));
 }
 
 function submitAddAlias(form) {
@@ -176,7 +176,6 @@ function init() {
 		$('#add-alias-alias').focus();
 	}).on('hidden.bs.modal', function(event) {
 		this.reset();
-		this.elements['_to'].value = 'verify'; // hidden form elements don't reset via reset()
 	});
 	$('#search-results').on('click', 'button.delete-alias', function(event) {
 		deleteAlias(this);
@@ -188,6 +187,7 @@ function init() {
 	}).on('hidden.bs.modal', function(event) {
 		importCarousel.carousel(0);
 		this.reset();
+		this.elements['_to'].value = 'verify'; // hidden form elements don't reset via reset()
 	}).find('button.back').hide().on('click', function() {
 		importGotoFirstStep(this);
 	});

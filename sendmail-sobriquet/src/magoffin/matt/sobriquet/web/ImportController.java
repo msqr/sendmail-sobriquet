@@ -72,7 +72,7 @@ public class ImportController {
 	@InitBinder
 	protected void initBinderAll(WebDataBinder binder) {
 		// register our Multipart TemporaryFile binder and validator
-		binder.registerCustomEditor(TemporaryFile.class, new TemporaryFileMultipartFileEditor());
+		binder.registerCustomEditor(TemporaryFile.class, new TemporaryFileMultipartFileEditor(true));
 	}
 
 	/**
@@ -92,7 +92,7 @@ public class ImportController {
 	public Response<List<Alias>> verify(@ModelAttribute("importForm") ImportForm form,
 			HttpSession session) throws IOException {
 		Reader reader = null;
-		if ( form.getFile() != null ) {
+		if ( form.getFile() != null && form.getFile().getSize() > 0 ) {
 			reader = new InputStreamReader(form.getFile().getInputStream(), "UTF-8");
 		} else {
 			reader = new StringReader(form.getAliasData());
