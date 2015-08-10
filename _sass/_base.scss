@@ -30,6 +30,10 @@ h1, h2, h3, h4, h5, h6 {
     color: $headline-color;
 }
 
+h2, h3, h4, h5, h6 {
+        margin-top: $spacing-unit;
+}
+
 img.hero {
 	float: left;
 	width: 200px;
@@ -67,7 +71,7 @@ dl.dictionary {
     &:after {
         content: "\2766";
         font-size: 32px;
-        color: #49699F;
+        color: $splash-color;
         clear: both;
     }
 }
@@ -127,11 +131,32 @@ ul.app-links {
 	}
 }
 
-/*
 strong {
-    color: #222;
     font-weight: 700;
-}*/
+}
+
+/**
+ * Table formatting.
+ */
+table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-bottom: $spacing-unit / 2;
+
+	th, td {
+	  text-align:left;
+	  padding: 5px 10px;
+	  border-bottom:1px solid #e5e5e5;
+	}
+	
+	tbody td {
+		vertical-align: top;
+	}
+
+}
+
+
  
 /**
  * Set `margin-bottom` to maintain vertical rhythm
@@ -162,10 +187,20 @@ figure > img {
     display: block;
 }
 
-figcaption {
-    font-size: $small-font-size;
+figure + figure {
+	margin-top: -$spacing-unit / 2;
+    &:before {
+        content: "\2766";
+        font-size: 32px;
+        line-height: 60px;
+        color: $splash-color;
+        clear: both;
+    }
 }
 
+figcaption {
+	margin-top: 4px;
+}
 
 
 /**
@@ -235,7 +270,7 @@ blockquote {
  */
 pre,
 code {
-    font-size: 15px;
+    font-size: 13px;
     border: 1px solid $grey-color-light;
     border-radius: 3px;
     background-color: #eef;

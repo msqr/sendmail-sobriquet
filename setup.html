@@ -1,0 +1,125 @@
+---
+layout: page
+title: Setup
+permalink: /setup/
+---
+
+<h2>Prerequisites</h2>
+
+<p>For the impatient, Sendmail Sobriquet requires the following:</p>
+
+<ul>
+	<li>A Java Servlet 3.0 container to run in</li>
+	<li>A directory server to talk to using the LDAP protocol</li>
+</ul>
+
+<p>For the more cautious, here are more details on those requirements:</p>
+
+<h3>Java Servlet 3.0 container</h3>
+
+<p>Sendmail Sobriquet requires a Servlet 3.0+ runtime. It's been tested using the <a href="https://tomcat.apache.org/">Apache Tomcat</a> server, version <strong>7</strong>. It should run fine in versions greater than that, but who knows? I haven't tested it.</p>
+
+<p>The app comes packaged as a standard <strong>WAR</strong> archive. You can deploy that using any means provided by your chosen servlet container, but you will need to configure some servlet environment properties for the app to function:</p>
+
+<table>
+	<thead>
+		<tr>
+			<th>Property</th>
+			<th>Example</th>
+			<th>Description</th>
+		</tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td><strong>ldapUrl</strong></td>
+			<td>ldap://server:389/dc=example,dc=com</td>
+			<td>The URL of the LDAP server to connect, which may include the base DN to connect to.</td>
+		</tr>
+		<tr>
+			<td><strong>ldapBaseDn</strong></td>
+			<td></td>
+			<td>An optional base DN to apply.</td>
+		</tr>
+		<tr>
+			<td><strong>ldapUserDn</strong></td>
+			<td>cn=Sendmail,dc=example,dc=com</td>
+			<td>The DN of the user to connect as. This user must have authorization to search, view, add, and delete entries within a <code>ou=Sendmail</code> relative DN.</td>
+		</tr>
+		<tr>
+			<td><strong>ldapPassword</strong></td>
+			<td>secret</td>
+			<td>The password to use when connecting to the server.</td>
+		</tr>
+	</tbody>
+</table>
+
+<p>How you configure environment properties varies based on the servlet container. For Apache Tomcat, you can create a <a href="https://tomcat.apache.org/tomcat-7.0-doc/config/context.html">context configuration file</a> that provides the necessary configuration as <code>&lt;Enviornment&gt;</code> elements, like this:</p>
+
+{% highlight xml %}
+<Context>
+	<Environment name="ldapUrl" value="ldap://server:389/dc=example,dc=com" 
+		type="java.lang.String" override="false"/>
+	<Environment name="ldapBaseDn" value="" 
+		type="java.lang.String" override="false"/>
+	<Environment name="ldapUserDn" value="cn=Sendmail,dc=example,dc=com" 
+		type="java.lang.String" override="false"/>
+	<Environment name="ldapPassword" value="secret" 
+		type="java.lang.String" override="false"/>
+</Context>
+{% endhighlight %}
+
+<h3>LDAP directory server</h3>
+
+<p>Sendmail Sobriquet manages alias database records via a directory server using the LDAP protocol. It's been tested using the <a href="http://www.openldap.org/">OpenLDAP</a> server, version <strong>2.4</strong>.</p>
+
+<h4>LDAP schemas</h4>
+
+<p>Sendmail requires the use of a specific <code>sendmail.schema</code> LDAP schema, which is distributed with Sendmail (try looking in <code>/usr/local/share/sendmail/cf</code> or some similar path on your system). That schema also relies on the fairly common <code>misc.schema</code>, usually distributed with directory servers themselves. These schema files Sendmail Sobriquet has been tested against are also available <a href="https://github.com/msqr/sendmail-sobriquet/blob/master/sendmail-sobriquet/src-test/magoffin/matt/sobriquet/test/misc.schema">here</a> and <a href="https://github.com/msqr/sendmail-sobriquet/blob/master/sendmail-sobriquet/src-test/magoffin/matt/sobriquet/test/sendmail.schema">here</a>.</p>
+
+<p>For OpenLDAP, you'd edit the <code>slapd.conf</code> configuration file and add <code>include</code> entries like this:</p>
+
+<pre>include         /usr/local/etc/openldap/schema/misc.schema
+include         /usr/local/etc/openldap/schema/sendmail.schema</pre>
+
+<h4>Base DN for alias entries</h4>
+
+<p>Sendmail Sobriquet will manage its alias entries under a hard-coded <code>ou=Sendmail</code> DN, relative to the base DN configured. Typically that would be defined as an <code>organizationalUnit</code> object, such as this:</p>
+
+<pre>dn: ou=Sendmail,dc=example,dc=com
+objectClass: top
+objectClass: organizationalUnit
+ou: Sendmail</pre>
+
+<h3>Sendmail</h3>
+
+<p>You have to configure Sendmail to support reading aliases from a LDAP database. First, it must be compiled with LDAP support. Then, you have to define a <code>confLDAP_DEFAULT_SPEC</code> and <code>confLDAP_CLUSTER</code> properties and update your <code>ALIAS_FILE</code> definition. The spec configuration looks like this:</p>
+
+<pre>
+define(`confLDAP_CLUSTER', `example.com')dnl
+define(`confLDAP_DEFAULT_SPEC', `-h localhost -s sub -b "ou=Sendmail,dc=example,dc=com" -d "cn=Sendmail,dc=example,dc=com" -M simple, -P /etc/mail/ldap.auth')dnl</pre>
+
+<p>There's a <a href="http://www.sendmail.org/~gshapiro/8.10.Training/LDAPConfig.html">handy reference</a> of the available options to that spec as well as more <a href="https://www.sendmail.com/sm/open_source/docs/m4/ldap.html">more detailed reference</a>. In this <code>LDAP_DEFAULT_SPEC</code> example, Sendmail will talk to the directory server running on <strong>localhost</strong>, connecting as the <strong>cn=Sendmail,dc=example,dc=com</strong> user authenticated using a password read from the <strong>/etc/mail/ldap.auth</strong> file. The base DN for alias entries is <strong>ou=Sendmail,dc=example,dc=com</strong>. The <code>LDAP_CLUSTER</code> value is set to <strong>example.com</code> and can be nearly anything you like.</p>
+
+<p>It (should) go without saying that these values must match the ones you configure in the directory server itself, as well as the environment properties configured in the servlet container for the app to use.</p>
+
+<h2>Security</h2>
+
+<p><strong>Please note</strong> that Sendmail Sobriquet does <strong>not</strong> restrict access or require a login. Instead it assumes that when you deploy the app you can restrict access by other means, such as via a HTTP server that proxies requests to the servlet container or by running it on a secure intranet. Unless you like the thought of any random person on the internet adding/removing entries in your alias database, then by all means please lock down access!</p>
+
+<p>Since you're already running a directory server (or will be, to use Sendmail Sobriquet), you might find it useful to use the directory server itself for authorization purposes. For example, using Apache httpd 2.2 as a front-end server you could restrict access like:</p>
+
+<pre>
+&lt;Location /sobriquet>
+	AuthType Basic
+	AuthName Sobriquet
+	AuthBasicProvider ldap
+	
+	AuthLDAPBindDN cn=Authenticator,dc=example,dc=com
+	AuthLDAPBindPassword ohsosecret
+	AuthLDAPURL ldap://localhost/ou=People,dc=example,dc=com?uid
+	
+	Require ldap-group cn=Sendmail Administrator,ou=Groups,dc=example,dc=com
+&lt;/Location>
+</pre>
+
+<p>This essentially restricts access to the app to members of the LDAP group <strong>Sendmail Administrator</strong>. Choice!</p>
