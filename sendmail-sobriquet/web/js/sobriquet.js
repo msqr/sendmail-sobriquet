@@ -60,6 +60,7 @@ function submitSearch(form) {
 
 function aliasUrl(key) {
 	return aliasUrlTemplate.replace(/\w+$/, encodeURIComponent(key));
+	return aliasUrlTemplate.replace(/[^/;]+(;.*)?$/, encodeURIComponent(key));
 }
 
 function submitAddAlias(form) {
