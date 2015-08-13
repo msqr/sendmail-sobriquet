@@ -30,10 +30,12 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+import org.springframework.http.MediaType;
 import org.springframework.web.multipart.MultipartResolver;
 import org.springframework.web.multipart.support.StandardServletMultipartResolver;
 import org.springframework.web.servlet.config.annotation.DefaultServletHandlerConfigurer;
 import org.springframework.web.servlet.config.annotation.EnableWebMvc;
+import org.springframework.web.servlet.config.annotation.PathMatchConfigurer;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurerAdapter;
 import org.springframework.web.servlet.view.InternalResourceViewResolver;
@@ -50,7 +52,7 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 public class MvcConfig extends WebMvcConfigurerAdapter {
 
 	@Value("${i18n.cacheSecs}")
-	private int i18nCacheSecs = -1;
+	private final int i18nCacheSecs = -1;
 
 	@Override
 	public void addResourceHandlers(ResourceHandlerRegistry registry) {
@@ -60,6 +62,24 @@ public class MvcConfig extends WebMvcConfigurerAdapter {
 	@Override
 	public void configureDefaultServletHandling(DefaultServletHandlerConfigurer configurer) {
 		configurer.enable();
+	}
+
+	@Override
+	public void configurePathMatch(PathMatchConfigurer matcher) {
+		// this turns off path variable truncation, to avoid treating a request like
+		// PUT /alias/example.com
+		// as /alias/example with a requested content type of "com" and instead use the default or Accept header
+		matcher.setUseSuffixPatternMatch(false);
+	}
+
+	@Override
+	public void configureContentNegotiation(
+			org.springframework.web.servlet.config.annotation.ContentNegotiationConfigurer configurer) {
+		// support rendering arbitrary path extensions always as JSON responses, e.g. PUT /alias/example.com
+		configurer.favorPathExtension(false).useJaf(false)
+				.defaultContentType(MediaType.APPLICATION_JSON)
+				.mediaType("xml", MediaType.APPLICATION_XML)
+				.mediaType("json", MediaType.APPLICATION_JSON);
 	}
 
 	@Bean
