@@ -94,13 +94,15 @@
 			  <div class="form-group">
 			    <label for="add-alias-alias" class="col-sm-2 control-label"><fmt:message key='alias.alias'/></label>
 			    <div class="col-sm-10">
-			      <input type="text" class="form-control" name="alias" required id="add-alias-alias" placeholder="<fmt:message key='alias.alias.placeholder'/>">
+			      <input type="text" class="form-control" name="alias" required autocapitalize="off" autocorrect="off" 
+			      	id="add-alias-alias" placeholder="<fmt:message key='alias.alias.placeholder'/>">
 			    </div>
 			  </div>
 			  <div class="form-group">
 			    <label for="add-alias-actual" class="col-sm-2 control-label"><fmt:message key='alias.actual'/></label>
 			    <div class="col-sm-10">
-			      <input type="text" class="form-control" name="actual" required id="add-alias-actual" placeholder="<fmt:message key='alias.actual.placeholder'/>">
+			      <input type="text" class="form-control" name="actual" required autocapitalize="off" autocorrect="off"
+			      	 id="add-alias-actual" placeholder="<fmt:message key='alias.actual.placeholder'/>">
 			    </div>
 			  </div>
   	      </div>
